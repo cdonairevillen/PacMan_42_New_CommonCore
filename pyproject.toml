@@ -1,0 +1,22 @@
+[project]
+name = "resources pac-man"
+version = "0.1.0"
+description = "All resources to install for the pac-man project"
+authors = [
+    {name = "cdonaire"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+
+    "pygame",
+    "pydantic",
+    "flake8",
+    "mypy",
+    "mazegenerator-00001-py3-none-any.whl"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
