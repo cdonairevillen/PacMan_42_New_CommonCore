@@ -5,6 +5,36 @@ $> python3 pac-man.py config.json
 
 mi estructura de carpetas recomendada seria:
 
+.
+├── config.json
+├── high_score
+│   └── laderboard.json
+├── pyproject.toml
+├── README.md
+├── resources
+│   ├── mazegenerator-00001-py3-none-any.whl
+│   ├── music
+│   └── sprites
+└── src
+    ├── enemies
+    │   ├── enemy_pink.py
+    │   └── __init__.py
+    ├── parser.py
+    ├── player
+    │   ├── __init__.py
+    │   └── player.py
+    ├── UI
+    │   ├── hud.py
+    │   ├── __init__.py
+    │   ├── main_meny.py
+    │   ├── pause_menu.py
+    │   └── utils
+    └── visualizer
+        ├── __init__.py
+        └── visualizer.py
+
+10 directories, 16 files
+
 
 
 # Entrada de Datos
