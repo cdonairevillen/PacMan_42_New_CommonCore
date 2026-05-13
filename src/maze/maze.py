@@ -1,9 +1,10 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 from maze.cell import Cell
 from mazegenerator.mazegenerator import MazeGenerator
 
-
+@dataclass
 class Maze:
     def __init__(self, cells: list[list[Cell]],
                  entry: tuple[int, int],
@@ -62,7 +63,7 @@ class Maze:
         return None
 
     @staticmethod
-    def from_generator(generator: MazeGenerator) -> Maze:
+    def from_generator(generator: MazeGenerator)-> Maze:
         raw: list[list[int]] = generator.maze
         cells: list[list[Cell]] = [
             [Cell(x=x, y=y, walls=raw[y][x]) for x in range(len(raw[y]))]
@@ -75,12 +76,8 @@ class Maze:
         )
 
     @staticmethod
-    def build(
-        width: int = 21,
-        height: int = 21,
-        seed: int = 0,
-        perfect: bool = False,
-    ) -> Maze:
+    def build(width: int = 21, height: int = 21,
+        seed: int = 0, perfect: bool = False) -> Maze:
         generator = MazeGenerator(
             size=(width, height),
             perfect=perfect,
