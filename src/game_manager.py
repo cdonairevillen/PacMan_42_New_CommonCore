@@ -27,7 +27,7 @@ class GameManager():
         self.current_level = 0
         self.current_maze = Maze.build(width=config["levels"][self.current_level]["width"],
                                        height=["levels"][self.current_level]["height"],
-                                       seed=42 if self.current_level is 0)
+                        p               seed=42 if self.current_level is 0)
         
         # Game Conditions
         self.level_max_time = config["level_max_time"]

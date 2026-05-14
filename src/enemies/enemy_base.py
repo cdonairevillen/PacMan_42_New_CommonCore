@@ -1,20 +1,20 @@
-class Player:
+class Enemy:
     """
-    Clase de jugador.
+    Clase base de todos los enemigos. Es muy parecida a la de player
+    usaremos esta como pase para luego que los enemigos de colores 
+    hereden de esta.
 
     Aqui guardamos:
     - posicion
-    - movimiento
-    - vidas
     - velocidad
+    - movimiento
     """
 
     def __init__(
         self,
         x: int,
         y: int,
-        speed: int,
-        lives: int
+        speed: int
     ) -> None:
 
         self.x = x
@@ -22,14 +22,12 @@ class Player:
 
         self.speed = speed
 
-        self.lives = lives
-
         self.direction_x = 0
         self.direction_y = 0
 
     def set_direction(self, dx: int, dy: int) -> None:
         """
-        Cambia la direccion del jugador.
+        Cambia la direccion del enemigo.
         """
 
         self.direction_x = dx
@@ -37,7 +35,7 @@ class Player:
 
     def move(self, maze) -> None:
         """
-        Mueve al jugador si no hay pared.
+        Mueve al enemigo si no hay pared.
         """
 
         cell = maze.get_cell(self.x, self.y)
@@ -45,7 +43,7 @@ class Player:
         if cell is None:
             return
 
-        #Derecha
+        #derecha
         if self.direction_x == 1:
 
             if cell.can_move("E"):
@@ -57,33 +55,17 @@ class Player:
             if cell.can_move("W"):
                 self.x -= 1
 
-        #arriba
+        #Arriba
         elif self.direction_y == -1:
 
             if cell.can_move("N"):
                 self.y -= 1
 
-        #abajo
+        #Abajo
         elif self.direction_y == 1:
 
             if cell.can_move("S"):
                 self.y += 1
-
-    def lose_life(self) -> None:
-        """
-        Resta una vida al jugador.
-        """
-
-        if self.lives > 0:
-            self.lives -= 1
-
-    def respawn(self, maze) -> None:
-        """
-        Devuelve al jugador al centro del mapa.
-        """
-
-        self.x = maze.center[0]
-        self.y = maze.center[1]
 
     def get_position(self) -> tuple[int, int]:
         """

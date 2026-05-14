@@ -1,7 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
-from maze.cell import Cell
+from src.maze.cell import Cell
 from mazegenerator.mazegenerator import MazeGenerator
 
 @dataclass
