@@ -1,6 +1,10 @@
 from src.maze.maze import Maze
 from src.player.player import Player
+
 from src.enemies.enemy_pink import EnemyPink
+from src.enemies.enemy_blue import EnemyBlue
+from src.enemies.enemy_orange import EnemyOrange
+from src.enemies.enemy_red import EnemyRed
 
 
 def main() -> None:
@@ -14,8 +18,8 @@ def main() -> None:
 
     #maze.
     maze = Maze.build(
-        width=20,
-        height=25,
+        width=15,
+        height=15,
         seed=42
     )
 
@@ -35,35 +39,66 @@ def main() -> None:
     print(f"Position: {player.get_position()}")
     print(f"Lives: {player.lives}")
 
-    #enemigo.
-    enemy = EnemyPink(
-        x=1,
-        y=1,
-        speed=1
-    )
+    #enemigos.
+    enemies = [
+        EnemyRed(
+            x=1,
+            y=1,
+            speed=1
+        ),
 
-    print("\nEnemigo creado")
-    print(f"Position: {enemy.get_position()}")
+        EnemyPink(
+            x=13,
+            y=1,
+            speed=1
+        ),
 
-    #enemigo persiga al jugador.
-    enemy.choose_direction(player)
+        EnemyBlue(
+            x=1,
+            y=13,
+            speed=1
+        ),
 
-    #Movemos enemigo.
-    enemy.move(maze)
+        EnemyOrange(
+            x=13,
+            y=13,
+            speed=1
+        )
+    ]
 
-    print("\nMovimiento del enemigo")
-    print(f"New position: {enemy.get_position()}")
+    #enemigos persigan al jugador.
+    for enemy in enemies:
 
-    #ccolision.
-    if player.get_position() == enemy.get_position():
+        print(f"\n{enemy.__class__.__name__}")
+        print(f"Position: {enemy.get_position()}")
 
-        player.lose_life()
+        print("Possible directions:")
+        print(enemy.get_possible_directions(maze))
 
-        print("\nPlayer hit")
-        print(f"Lives left: {player.lives}")
+        if isinstance(enemy, EnemyOrange):
 
-    else:
-        print("\nNo hay colision")
+            enemy.choose_direction(maze)
+
+        else:
+
+            enemy.choose_direction(player, maze)
+
+        #Movemos enemigo.
+        enemy.move(maze)
+
+        print("\nMovimiento del enemigo")
+        print(f"New position: {enemy.get_position()}")
+
+        #ccolision.
+        if player.get_position() == enemy.get_position():
+
+            player.lose_life()
+
+            print("\nPlayer hit")
+            print(f"Lives left: {player.lives}")
+
+        else:
+            print("\nNo hay colision")
 
 
 if __name__ == "__main__":

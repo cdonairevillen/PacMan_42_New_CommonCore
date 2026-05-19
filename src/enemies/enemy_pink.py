@@ -4,23 +4,24 @@ from src.enemies.enemy_base import Enemy
 class EnemyPink(Enemy):
     """
     Fantasma rosa.
+    Intenta alinearse lateralmente primero.
+    Da sensacion de rodear al jugador.
     """
 
-    def choose_direction(self, player) -> None:
-        """
-        Es solo de prueba luego que hay que ver exactamente el patron
-        de cada enemigo dependiendo de su color.
-        Este de moemnto solo intenta acercarse al jugador.
-        """
+    def choose_direction(self, player, maze) -> None:
 
-        if player.x > self.x:
-            self.set_direction(1, 0)
+        possible_directions = self.get_possible_directions(maze)
 
-        elif player.x < self.x:
-            self.set_direction(-1, 0)
+        # Prioriza vertical primero.
 
-        elif player.y > self.y:
+        if player.y > self.y and (0, 1) in possible_directions:
             self.set_direction(0, 1)
 
-        elif player.y < self.y:
+        elif player.y < self.y and (0, -1) in possible_directions:
             self.set_direction(0, -1)
+
+        elif player.x > self.x and (1, 0) in possible_directions:
+            self.set_direction(1, 0)
+
+        elif player.x < self.x and (-1, 0) in possible_directions:
+            self.set_direction(-1, 0)

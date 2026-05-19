@@ -43,29 +43,59 @@ class Enemy:
         if cell is None:
             return
 
-        #derecha
+        # derecha
         if self.direction_x == 1:
 
             if cell.can_move("E"):
                 self.x += 1
 
-        #Izquierda
+        # Izquierda
         elif self.direction_x == -1:
 
             if cell.can_move("W"):
                 self.x -= 1
 
-        #Arriba
+        # Arriba
         elif self.direction_y == -1:
 
             if cell.can_move("N"):
                 self.y -= 1
 
-        #Abajo
+        # Abajo
         elif self.direction_y == 1:
 
             if cell.can_move("S"):
                 self.y += 1
+        
+    def get_possible_directions(self, maze) -> list[tuple[int, int]]:
+        """
+        direcciones posibles.
+        """
+
+        possible_directions = []
+
+        cell = maze.get_cell(self.x, self.y)
+
+        if cell is None:
+            return possible_directions
+
+        # Derecha
+        if cell.can_move("E"):
+            possible_directions.append((1, 0))
+
+        # Izquierda
+        if cell.can_move("W"):
+            possible_directions.append((-1, 0))
+
+        # Arriba
+        if cell.can_move("N"):
+            possible_directions.append((0, -1))
+
+        # Abajo
+        if cell.can_move("S"):
+            possible_directions.append((0, 1))
+
+        return possible_directions
 
     def get_position(self) -> tuple[int, int]:
         """
