@@ -54,16 +54,5 @@
 }
 
 
-# Niveles impares, ya que asi tenemos una casilla central.
-# Segun se pasa de nivel el mapa va aumentando su tamaño. Y como
-# el subject pide multiples niveles asi vamos aumentando su dificultad :D.
-# Mas adelante añadimos:
-# - El cheat mode
-# - Tema de velocidades para poder configurarlo sin ca,biar codigo.
-# - Numero de fantasmas.
-# - Tambien la configuracion visual. por ejemplo poner que sera igual
-# a 32 entonces el mapa mide 32 pixeles y contra mas grande sea el numero
-# mas grande se vera el juego en pantalla (se entiende o patata?).
-# - Tambien podemos hacer para aumentar dificultad tiempo por cada nivel.
-# - Y si quieres que tengamos musiquita pues tambien se añade aqui :).
-
+# tendriamos que mirar otras variables posibles.
+# speed, por ejemplo

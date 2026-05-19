@@ -27,6 +27,8 @@ class Player:
         self.direction_x = 0
         self.direction_y = 0
 
+        self.powerup = False
+
     def set_direction(self, dx: int, dy: int) -> None:
         """
         Cambia la direccion del jugador.

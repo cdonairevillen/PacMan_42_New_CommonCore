@@ -1,0 +1,5 @@
+"pygame",
+"pydantic",
+"flake8",
+"mypy",
+"mazegenerator-00001-py3-none-any.whl"
