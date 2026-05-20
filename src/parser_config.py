@@ -13,13 +13,11 @@ DEFAULT_CONFIG = {
     "highscore_filename": "high_score/leaderboard.json",
     "levels": [
         {
-            "width": 15,
-            "height": 15
+            "width": 3,
+            "height": 3
         }
     ]
 }
-
-
 
 def load_config(path: str) -> dict:
     """

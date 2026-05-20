@@ -12,7 +12,7 @@ class EnemyBlue(Enemy):
     """
 
     def choose_direction(self, player, maze) -> None:
-    
+
         possible_directions = self.get_possible_directions(maze)
 
         if not possible_directions:

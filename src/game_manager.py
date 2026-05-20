@@ -1,8 +1,9 @@
 from enum import Enum
 from maze.maze import Maze
-from player.player import Player
+from player.player import Player, PlayerState
 from typing import Optional
 from consumibles.pac_gum import Pacgum, SuperPacgum
+from enemies.enemy_base import Enemy, EnemyState
 
 
 class State(Enum):
@@ -28,7 +29,8 @@ class GameManager():
         # Game State
         self.state = State.PAUSED
         self.current_level: int = 0
-        self.current_pacgums: list[Pacgum] = []  # lista, no Optional[Pacgum]
+        self.current_pacgums: list[Pacgum] = []
+        self.enemies: list[Enemy] = []
         self.current_maze: Optional[Maze] = None
         self.build_level(seed=config["seed"])
 
@@ -40,7 +42,7 @@ class GameManager():
         # Player info
         self.player = Player(x=self.current_maze.center[0],
                              y=self.current_maze.center[1],
-                             lives=config["lives"], speed=30)
+                             lives=config["lives"], speed=10)
 
         self.score = 0
 
@@ -49,7 +51,6 @@ class GameManager():
     def build_level(self, seed: int) -> None:
 
         if self.current_level == 0:
-
             self.current_maze = Maze.build(
                 width=self.config["levels"][self.current_level]["width"],
                 height=self.config["levels"][self.current_level]["height"],
@@ -119,9 +120,29 @@ class GameManager():
         if self.state == State.PLAYING:
             self.time_remining -= dt
             self.move_timer += dt
+            player_pos = self.player.get_position()
             if self.move_timer >= 1.0 / self.player.speed: # El parametro de speed iria aqui en caso de que lo hicisesemos
                 self.player.move(self.current_maze)
                 self.move_timer = 0
+
+            for pacgum in self.current_pacgums:
+                if not pacgum.eaten and (pacgum.x, pacgum.y) == player_pos:
+                    self.eat_packgum(pacgum)
+                    break
+
+            for enemy in self.enemies:
+                enemy_pos = enemy.get_position()
+                if enemy_pos == player_pos:
+                    if enemy.state == EnemyState.FEAR:
+                        continue
+
+                    elif (enemy.state == EnemyState.FEAR
+                          and self.player.state == PlayerState.POWER_UP):
+                        self.eat_ghost(enemy)
+
+                    elif (enemy.state == EnemyState.NORMAL
+                          and self.player.state == PlayerState.NORMAL):
+                        self.player.lose_life()
 
             if self.time_remining <= 0:
                 self.game_over()
@@ -145,3 +166,4 @@ class GameManager():
     def eat_ghost(self, enemy):
 
         self.score += self.points_per_ghost
+        enemy.state = EnemyState.FEAR

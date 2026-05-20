@@ -76,7 +76,7 @@ class Maze:
         )
 
     @staticmethod
-    def build(width: int = 21, height: int = 21,
+    def build(width: int = 8, height: int = 8,
         seed: int = 0, perfect: bool = False) -> Maze:
         generator = MazeGenerator(
             size=(width, height),

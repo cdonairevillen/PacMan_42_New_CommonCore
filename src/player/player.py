@@ -1,3 +1,12 @@
+from enum import Enum
+
+
+class PlayerState(Enum):
+
+    POWER_UP = "power_up"
+    NORMAL = "normal"
+
+
 class Player:
     """
     Clase de jugador.
@@ -27,7 +36,7 @@ class Player:
         self.direction_x = 0
         self.direction_y = 0
 
-        self.powerup = False
+        self.state = PlayerState.NORMAL
 
     def set_direction(self, dx: int, dy: int) -> None:
         """

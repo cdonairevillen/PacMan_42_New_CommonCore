@@ -1,7 +1,16 @@
+from enum import Enum
+
+
+class EnemyState(Enum):
+    INV = "invulnerable"
+    NORMAL = "normal"
+    FEAR = "fear"
+
+
 class Enemy:
     """
     Clase base de todos los enemigos. Es muy parecida a la de player
-    usaremos esta como pase para luego que los enemigos de colores 
+    usaremos esta como pase para luego que los enemigos de colores
     hereden de esta.
 
     Aqui guardamos:
@@ -24,6 +33,7 @@ class Enemy:
 
         self.direction_x = 0
         self.direction_y = 0
+        self.state = EnemyState.NORMAL
 
     def set_direction(self, dx: int, dy: int) -> None:
         """
@@ -66,7 +76,7 @@ class Enemy:
 
             if cell.can_move("S"):
                 self.y += 1
-        
+
     def get_possible_directions(self, maze) -> list[tuple[int, int]]:
         """
         direcciones posibles.

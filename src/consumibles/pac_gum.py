@@ -14,7 +14,7 @@ class Pacgum():
 
 
 class SuperPacgum(Pacgum):
-    
+
     def __init__(self, x, y, points):
         super().__init__(x, y, points)
 
