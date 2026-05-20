@@ -119,11 +119,17 @@ class MazeVisualizer:
 
     def draw(self) -> None:
         """Execute a full render pass for the current frame."""
+        maze = self.game_manager.current_maze
+
+        if maze.width * self.cell_size + MARGIN * 2 != self.screen.get_width():
+            self.resize_window()
+
         self.screen.fill(Color.BG.rgb())
         self.draw_cell_backgrounds()
         self.draw_pacgums()
         self.draw_walls()
         self.draw_player()
+        self.draw_enemies()
         self.draw_hud()
         pygame.display.flip()
 
@@ -134,7 +140,8 @@ class MazeVisualizer:
             for x in range(maze.width):
                 cell = maze.cells[y][x]
                 color = Color.BLOCKED if cell.is_blocked else Color.FLOOR
-                pygame.draw.rect(self.screen, color.rgb(), self.cell_rect(x, y))
+                pygame.draw.rect(self.screen, color.rgb(),
+                                 self.cell_rect(x, y))
 
     def draw_pacgums(self) -> None:
         """Draw all pacgums and superpacgums that have not been eaten yet."""
@@ -207,6 +214,23 @@ class MazeVisualizer:
         pygame.draw.circle(
             self.screen, Color.PLAYER_SPAWN.rgb(), rect.center, r
         )
+
+    def draw_enemies(self) -> None:
+        """Draw all enemies with a colour reflecting their current state."""
+        from enemies.enemy_base import EnemyState
+
+        for enemy in self.game_manager.enemies:
+            rect = self.cell_rect(enemy.x, enemy.y)
+            r = max(4, self.cell_size // 3)
+
+            if enemy.state == EnemyState.FEAR:
+                color = Color.PACGUM
+            elif enemy.state == EnemyState.INV:
+                color = Color.TEXT_DIM
+            else:
+                color = Color.GHOST_CORNER
+
+            pygame.draw.circle(self.screen, color.rgb(), rect.center, r)
 
     def draw_hud(self) -> None:
         """Render the HUD bar below the maze with score, lives and time."""

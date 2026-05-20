@@ -4,6 +4,7 @@ from player.player import Player, PlayerState
 from typing import Optional
 from consumibles.pac_gum import Pacgum, SuperPacgum
 from enemies.enemy_base import Enemy, EnemyState
+import random
 
 
 class State(Enum):
@@ -66,6 +67,10 @@ class GameManager():
         corners = set(self.current_maze.get_corner_cells())
         center = self.current_maze.center
         self.current_pacgums = []
+        self.enemies = []
+
+        for x, y in corners:
+            self.enemies.append(Enemy(x=x, y=y, speed=8))
 
         for x, y in self.current_maze.get_walkable_cells():
 
@@ -93,6 +98,8 @@ class GameManager():
             self.state = State.LOADING
             self.build_level(seed=0)
             self.time_remining = self.level_max_time
+            self.player.respawn(self.current_maze)
+            self.state = State.PLAYING
 
             return True
 
@@ -120,20 +127,28 @@ class GameManager():
         if self.state == State.PLAYING:
             self.time_remining -= dt
             self.move_timer += dt
-            player_pos = self.player.get_position()
-            if self.move_timer >= 1.0 / self.player.speed: # El parametro de speed iria aqui en caso de que lo hicisesemos
+
+            if self.move_timer >= 1.0 / self.player.speed:
                 self.player.move(self.current_maze)
                 self.move_timer = 0
 
+            player_pos = self.player.get_position()
             for pacgum in self.current_pacgums:
                 if not pacgum.eaten and (pacgum.x, pacgum.y) == player_pos:
                     self.eat_packgum(pacgum)
                     break
 
             for enemy in self.enemies:
+                enemy.move_timer += dt
+                if enemy.move_timer >= 1.0 / enemy.speed:
+                    directions = enemy.get_possible_directions(self.current_maze)
+                    if directions:
+                        enemy.set_direction(*random.choice(directions))
+                        enemy.move(self.current_maze)
+                    enemy.move_timer = 0
                 enemy_pos = enemy.get_position()
                 if enemy_pos == player_pos:
-                    if enemy.state == EnemyState.FEAR:
+                    if enemy.state == EnemyState.INV:
                         continue
 
                     elif (enemy.state == EnemyState.FEAR

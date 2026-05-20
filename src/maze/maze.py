@@ -4,6 +4,7 @@ from typing import Optional
 from maze.cell import Cell
 from mazegenerator.mazegenerator import MazeGenerator
 
+
 @dataclass
 class Maze:
     def __init__(self, cells: list[list[Cell]],
@@ -30,10 +31,10 @@ class Maze:
 
     def get_corner_cells(self) -> list[tuple[int, int]]:
         targets = [
-            (1, 1),
-            (self.width - 2, 1),
-            (1, self.height - 2),
-            (self.width - 2, self.height - 2),
+            (0, 0),
+            (self.width - 1, 0),
+            (0, self.height),
+            (self.width - 1, self.height - 1),
         ]
         result: list[tuple[int, int]] = []
         for tx, ty in targets:
@@ -47,9 +48,8 @@ class Maze:
         cy = self.height // 2
         return self.find_nearest_walkable(cx, cy) or (cx, cy)
 
-    def find_nearest_walkable(
-        self, tx: int, ty: int
-    ) -> Optional[tuple[int, int]]:
+    def find_nearest_walkable(self, tx: int,
+                              ty: int) -> Optional[tuple[int, int]]:
         for radius in range(max(self.width, self.height)):
             for dy in range(-radius, radius + 1):
                 for dx in range(-radius, radius + 1):
@@ -63,7 +63,7 @@ class Maze:
         return None
 
     @staticmethod
-    def from_generator(generator: MazeGenerator)-> Maze:
+    def from_generator(generator: MazeGenerator) -> Maze:
         raw: list[list[int]] = generator.maze
         cells: list[list[Cell]] = [
             [Cell(x=x, y=y, walls=raw[y][x]) for x in range(len(raw[y]))]
@@ -77,7 +77,7 @@ class Maze:
 
     @staticmethod
     def build(width: int = 8, height: int = 8,
-        seed: int = 0, perfect: bool = False) -> Maze:
+              seed: int = 0, perfect: bool = False) -> Maze:
         generator = MazeGenerator(
             size=(width, height),
             perfect=perfect,
