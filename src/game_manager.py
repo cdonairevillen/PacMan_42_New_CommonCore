@@ -157,7 +157,7 @@ class GameManager():
 
                     elif (enemy.state == EnemyState.NORMAL
                           and self.player.state == PlayerState.NORMAL):
-                        self.player.lose_life()
+                        self.check_life()
 
             if self.time_remining <= 0:
                 self.game_over()
@@ -167,6 +167,7 @@ class GameManager():
     def check_life(self):
 
         self.player.lose_life()
+        self.player.x, self.player.y = self.current_maze.center
 
         if self.player.lives <= 0:
             self.game_over()
