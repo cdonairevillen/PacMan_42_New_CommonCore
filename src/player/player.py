@@ -36,6 +36,8 @@ class Player:
         self.direction_x = 0
         self.direction_y = 0
 
+        self.cheat_mode = False
+
         self.state = PlayerState.NORMAL
 
     def set_direction(self, dx: int, dy: int) -> None:
@@ -45,6 +47,15 @@ class Player:
 
         self.direction_x = dx
         self.direction_y = dy
+
+    def toggle_cheat_mode(self) -> None:
+        """
+        Activa o desactiva el cheat mode.
+        """
+
+        self.cheat_mode = not self.cheat_mode
+
+        print(f"Cheat mode: {self.cheat_mode}")
 
     def move(self, maze) -> None:
         """
@@ -56,25 +67,25 @@ class Player:
         if cell is None:
             return
 
-        #Derecha
+        # Derecha
         if self.direction_x == 1:
 
             if cell.can_move("E"):
                 self.x += 1
 
-        #Izquierda
+        # Izquierda
         elif self.direction_x == -1:
 
             if cell.can_move("W"):
                 self.x -= 1
 
-        #arriba
+        # arriba
         elif self.direction_y == -1:
 
             if cell.can_move("N"):
                 self.y -= 1
 
-        #abajo
+        # abajo
         elif self.direction_y == 1:
 
             if cell.can_move("S"):
@@ -84,6 +95,12 @@ class Player:
         """
         Resta una vida al jugador.
         """
+
+        if self.cheat_mode:
+
+            print("Cheat mode enabled: no damage taken")
+
+            return
 
         if self.lives > 0:
             self.lives -= 1

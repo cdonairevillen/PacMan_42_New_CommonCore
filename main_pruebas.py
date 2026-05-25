@@ -16,7 +16,7 @@ def main() -> None:
     - Colisiones
     """
 
-    #maze.
+    # maze.
     maze = Maze.build(
         width=15,
         height=15,
@@ -27,7 +27,7 @@ def main() -> None:
     print(f"Size: {maze.width}x{maze.height}")
     print(f"Center: {maze.center}")
 
-    #jugador.
+    # jugador.
     player = Player(
         x=maze.center[0],
         y=maze.center[1],
@@ -39,7 +39,9 @@ def main() -> None:
     print(f"Position: {player.get_position()}")
     print(f"Lives: {player.lives}")
 
-    #enemigos.
+    player.toggle_cheat_mode()
+
+    # enemigos.
     enemies = [
         EnemyRed(
             x=1,
@@ -66,7 +68,7 @@ def main() -> None:
         )
     ]
 
-    #enemigos persigan al jugador.
+    # enemigos persigan al jugador.
     for enemy in enemies:
 
         print(f"\n{enemy.__class__.__name__}")
@@ -83,13 +85,13 @@ def main() -> None:
 
             enemy.choose_direction(player, maze)
 
-        #Movemos enemigo.
+        # Movemos enemigo.
         enemy.move(maze)
 
         print("\nMovimiento del enemigo")
         print(f"New position: {enemy.get_position()}")
 
-        #ccolision.
+        # colision.
         if player.get_position() == enemy.get_position():
 
             player.lose_life()

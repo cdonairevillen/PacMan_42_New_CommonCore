@@ -141,7 +141,8 @@ class GameManager():
             for enemy in self.enemies:
                 enemy.move_timer += dt
                 if enemy.move_timer >= 1.0 / enemy.speed:
-                    directions = enemy.get_possible_directions(self.current_maze)
+                    directions = enemy.get_possible_directions(
+                        self.current_maze)
                     if directions:
                         enemy.set_direction(*random.choice(directions))
                         enemy.move(self.current_maze)
