@@ -33,7 +33,7 @@ class Maze:
         targets = [
             (0, 0),
             (self.width - 1, 0),
-            (0, self.height),
+            (0, self.height - 1),
             (self.width - 1, self.height - 1),
         ]
         result: list[tuple[int, int]] = []

@@ -1,3 +1,6 @@
+from player.player import PlayerState
+
+
 class Pacgum():
 
     def __init__(self, x, y, points):
@@ -20,5 +23,6 @@ class SuperPacgum(Pacgum):
 
     def consumed(self, player):
 
-        player.powerup = True
-        return super().consumed()
+        player.state = PlayerState.POWER_UP
+        player.power_timer = 10
+        return super().consumed(player)

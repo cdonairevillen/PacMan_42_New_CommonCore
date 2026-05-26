@@ -35,6 +35,7 @@ class Enemy:
         self.direction_y = 0
         self.move_timer: float = 0.0
         self.state = EnemyState.NORMAL
+        self.respawn_timer = 0
 
     def set_direction(self, dx: int, dy: int) -> None:
         """

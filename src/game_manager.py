@@ -4,8 +4,11 @@ from player.player import Player, PlayerState
 from typing import Optional
 from consumibles.pac_gum import Pacgum, SuperPacgum
 from enemies.enemy_base import Enemy, EnemyState
+from enemies.enemy_red import EnemyRed
+from enemies.enemy_pink import EnemyPink
+from enemies.enemy_blue import EnemyBlue
+from enemies.enemy_orange import EnemyOrange
 import random
-
 
 class State(Enum):
 
@@ -43,7 +46,7 @@ class GameManager():
         # Player info
         self.player = Player(x=self.current_maze.center[0],
                              y=self.current_maze.center[1],
-                             lives=config["lives"], speed=10)
+                             lives=config["lives"], speed=5)
 
         self.score = 0
 
@@ -69,8 +72,14 @@ class GameManager():
         self.current_pacgums = []
         self.enemies = []
 
-        for x, y in corners:
-            self.enemies.append(Enemy(x=x, y=y, speed=8))
+        corners = list(self.current_maze.get_corner_cells())
+
+        self.enemies = [
+            EnemyRed(corners[0][0], corners[0][1], speed=3.8),
+            EnemyPink(corners[1][0], corners[1][1], speed=3.5),
+            EnemyBlue(corners[2][0], corners[2][1], speed=3.2),
+            EnemyOrange(corners[3][0], corners[3][1], speed=2.8),
+        ]
 
         for x, y in self.current_maze.get_walkable_cells():
 
@@ -125,12 +134,23 @@ class GameManager():
     def update(self, dt):
 
         if self.state == State.PLAYING:
-            self.time_remining -= dt
+            if not self.player.cheat_mode:
+                self.time_remining -= dt
             self.move_timer += dt
 
             if self.move_timer >= 1.0 / self.player.speed:
                 self.player.move(self.current_maze)
                 self.move_timer = 0
+       
+            if self.player.state == PlayerState.POWER_UP:
+                self.player.power_timer -= dt
+
+                if self.player.power_timer <= 0:
+                    self.player.state = PlayerState.NORMAL
+                    
+                    for enemy in self.enemies:
+                        if enemy.state == EnemyState.FEAR:
+                            enemy.state = EnemyState.NORMAL
 
             player_pos = self.player.get_position()
             for pacgum in self.current_pacgums:
@@ -139,16 +159,25 @@ class GameManager():
                     break
 
             for enemy in self.enemies:
+                if enemy.state == EnemyState.INV:
+                    enemy.respawn_timer -= dt
+                    if enemy.respawn_timer <= 0:
+                        enemy.state = EnemyState.NORMAL
                 enemy.move_timer += dt
                 if enemy.move_timer >= 1.0 / enemy.speed:
-                    directions = enemy.get_possible_directions(
-                        self.current_maze)
-                    if directions:
-                        enemy.set_direction(*random.choice(directions))
-                        enemy.move(self.current_maze)
+                    if isinstance(enemy, EnemyOrange):
+                        enemy.choose_direction(self.current_maze)
+                    else:
+                        enemy.choose_direction(
+                            self.player,
+                            self.current_maze
+                        )
+                    enemy.move(self.current_maze)
                     enemy.move_timer = 0
                 enemy_pos = enemy.get_position()
                 if enemy_pos == player_pos:
+                    if self.player.cheat_mode:
+                        continue
                     if enemy.state == EnemyState.INV:
                         continue
 
@@ -165,22 +194,59 @@ class GameManager():
 
     # Player Management
 
-    def check_life(self):
+    def reset_enemy_positions(self) -> None:
+
+        corners = self.current_maze.get_corner_cells()
+
+        if len(corners) < 4:
+            return
+
+        self.enemies[0].x, self.enemies[0].y = corners[0]
+        self.enemies[1].x, self.enemies[1].y = corners[1]
+        self.enemies[2].x, self.enemies[2].y = corners[2]
+        self.enemies[3].x, self.enemies[3].y = corners[3]
+
+        for enemy in self.enemies:
+
+            enemy.direction_x = 0
+            enemy.direction_y = 0
+
+            enemy.state = EnemyState.NORMAL
+        
+    def check_life(self) -> None:
 
         self.player.lose_life()
-        self.player.x, self.player.y = self.current_maze.center
 
         if self.player.lives <= 0:
+
             self.game_over()
+
+            return
+
+        # Respawn player.
+        self.player.respawn(self.current_maze)
+
+        # Reset fantasmas.
+        self.reset_enemy_positions()
 
     def eat_packgum(self, pacgum):
 
         self.score += pacgum.consumed(self.player)
+        if isinstance(pacgum, SuperPacgum):
 
+            for enemy in self.enemies:
+                enemy.state = EnemyState.FEAR
         if not any(not p.eaten for p in self.current_pacgums):
             self.next_level()
 
     def eat_ghost(self, enemy):
 
         self.score += self.points_per_ghost
-        enemy.state = EnemyState.FEAR
+        enemy.state = EnemyState.INV
+        enemy.respawn_timer = 3
+        corners = self.current_maze.get_corner_cells()
+
+        if corners:
+            enemy.x, enemy.y = random.choice(corners)
+        enemy.direction_x = 0
+        enemy.direction_y = 0

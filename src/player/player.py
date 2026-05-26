@@ -39,6 +39,9 @@ class Player:
         self.cheat_mode = False
 
         self.state = PlayerState.NORMAL
+        self.power_timer = 0
+
+        self.last_direction = "right"
 
     def set_direction(self, dx: int, dy: int) -> None:
         """
@@ -47,6 +50,13 @@ class Player:
 
         self.direction_x = dx
         self.direction_y = dy
+        if dx == 1:
+
+            self.last_direction = "right"
+
+        elif dx == -1:
+
+            self.last_direction = "left"
 
     def toggle_cheat_mode(self) -> None:
         """
