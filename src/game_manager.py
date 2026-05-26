@@ -10,8 +10,11 @@ from enemies.enemy_blue import EnemyBlue
 from enemies.enemy_orange import EnemyOrange
 import random
 
+
 class State(Enum):
 
+    MENU = "menu"
+    LADERBOARD = "laderboard"
     PLAYING = "playing"
     PAUSED = "paused"
     GAME_OVER = "gameover"
@@ -31,7 +34,7 @@ class GameManager():
         self.points_per_ghost = config["points_per_ghost"]
 
         # Game State
-        self.state = State.PAUSED
+        self.state = State.MENU
         self.current_level: int = 0
         self.current_pacgums: list[Pacgum] = []
         self.enemies: list[Enemy] = []
@@ -93,6 +96,14 @@ class GameManager():
             else:
                 self.current_pacgums.append(
                     Pacgum(x=x, y=y, points=self.points_per_gum))
+                
+    def reset(self):
+        self.score = 0
+        self.current_level = 0
+        self.time_remining = self.level_max_time
+        self.build_level(seed=self.config["seed"])
+        self.player.respawn(self.current_maze)
+        self.player.lives = self.config["lives"]
 
     def next_level(self):
 
@@ -141,13 +152,13 @@ class GameManager():
             if self.move_timer >= 1.0 / self.player.speed:
                 self.player.move(self.current_maze)
                 self.move_timer = 0
-       
+
             if self.player.state == PlayerState.POWER_UP:
                 self.player.power_timer -= dt
 
                 if self.player.power_timer <= 0:
                     self.player.state = PlayerState.NORMAL
-                    
+
                     for enemy in self.enemies:
                         if enemy.state == EnemyState.FEAR:
                             enemy.state = EnemyState.NORMAL
@@ -212,7 +223,7 @@ class GameManager():
             enemy.direction_y = 0
 
             enemy.state = EnemyState.NORMAL
-        
+
     def check_life(self) -> None:
 
         self.player.lose_life()

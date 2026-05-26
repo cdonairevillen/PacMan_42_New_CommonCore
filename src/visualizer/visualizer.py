@@ -1,11 +1,9 @@
 from __future__ import annotations
-
 import sys
-
 import pygame
-
 from visualizer.colors import Color
 from game_manager import GameManager, State
+from ui_manager import UIManager
 
 
 WALL_THICKNESS: int = 3
@@ -63,6 +61,7 @@ class MazeVisualizer:
         self.clock = pygame.time.Clock()
         self.font_small = pygame.font.SysFont("monospace", 14)
         self.resize_window()
+        self.ui_manager = UIManager(self.game_manager, self.screen)
         pygame.display.set_caption(self.title)
         self.load_sprites()
 
@@ -100,6 +99,7 @@ class MazeVisualizer:
 
     def handle_events(self) -> None:
         """Process all pending pygame events for this frame."""
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -108,7 +108,13 @@ class MazeVisualizer:
                 if event.key in (pygame.K_ESCAPE, pygame.K_q):
                     self.running = False
 
-                elif event.key == pygame.K_p:
+            if self.game_manager.state != State.PLAYING:
+                self.ui_manager.handle_event(event)
+                continue
+
+            elif event.type == pygame.KEYDOWN:
+
+                if event.key == pygame.K_p:
                     if self.game_manager.state == State.PLAYING:
                         self.game_manager.pause()
                     elif self.game_manager.state == State.PAUSED:
@@ -136,31 +142,38 @@ class MazeVisualizer:
             self.resize_window()
 
         self.screen.fill(Color.BG.rgb())
-        self.player_animation_timer += 1 / 60
 
-        if self.player_animation_timer >= 0.1:
+        if self.game_manager.state == State.PLAYING:
+            self.player_animation_timer += 1 / 60
 
-            self.player_animation_frame = (
-                self.player_animation_frame + 1
-            ) % 3
+            if self.player_animation_timer >= 0.1:
 
-            self.player_animation_timer = 0
+                self.player_animation_frame = (
+                    self.player_animation_frame + 1
+                ) % 3
 
-        self.enemy_animation_timer += 1 / 60
+                self.player_animation_timer = 0
 
-        if self.enemy_animation_timer >= 0.15:
+            self.enemy_animation_timer += 1 / 60
 
-            self.enemy_animation_frame = (
-                self.enemy_animation_frame + 1
-            ) % 2
+            if self.enemy_animation_timer >= 0.15:
 
-            self.enemy_animation_timer = 0
-        self.draw_cell_backgrounds()
-        self.draw_pacgums()
-        self.draw_walls()
-        self.draw_player()
-        self.draw_enemies()
-        self.draw_hud()
+                self.enemy_animation_frame = (
+                    self.enemy_animation_frame + 1
+                ) % 2
+
+                self.enemy_animation_timer = 0
+            self.draw_cell_backgrounds()
+            self.draw_pacgums()
+            self.draw_walls()
+            self.draw_player()
+            self.draw_enemies()
+            self.draw_hud()
+
+        else:
+            self.ui_manager.update()
+            self.ui_manager.draw()
+
         pygame.display.flip()
 
     def draw_cell_backgrounds(self) -> None:

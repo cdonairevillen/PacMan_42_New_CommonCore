@@ -28,6 +28,10 @@ class Color(Enum):
     TEXT = (255, 255, 255)
     TEXT_DIM = (140, 140, 180)
 
+    BUTTON_NORMAL = (50, 50, 150)
+    BUTTON_HOVERED = (80, 80, 220)
+    BUTTON_SELECTED = (255, 220, 0)
+
     def rgb(self) -> tuple[int, int, int]:
         """
         Return the colour as a plain (R, G, B) tuple.
