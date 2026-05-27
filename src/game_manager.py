@@ -96,7 +96,7 @@ class GameManager():
             else:
                 self.current_pacgums.append(
                     Pacgum(x=x, y=y, points=self.points_per_gum))
-                
+
     def reset(self):
         self.score = 0
         self.current_level = 0
@@ -173,7 +173,10 @@ class GameManager():
                 if enemy.state == EnemyState.INV:
                     enemy.respawn_timer -= dt
                     if enemy.respawn_timer <= 0:
-                        enemy.state = EnemyState.NORMAL
+                        if self.player.state == PlayerState.POWER_UP:
+                            enemy.state = EnemyState.FEAR
+                        else:
+                            enemy.state = EnemyState.NORMAL
                 enemy.move_timer += dt
                 if enemy.move_timer >= 1.0 / enemy.speed:
                     if isinstance(enemy, EnemyOrange):
@@ -253,11 +256,13 @@ class GameManager():
     def eat_ghost(self, enemy):
 
         self.score += self.points_per_ghost
-        enemy.state = EnemyState.INV
-        enemy.respawn_timer = 3
-        corners = self.current_maze.get_corner_cells()
 
-        if corners:
-            enemy.x, enemy.y = random.choice(corners)
+        enemy.state = EnemyState.INV
+
+        enemy.respawn_timer = 3
+
+        enemy.x = enemy.spawn_x
+        enemy.y = enemy.spawn_y
+
         enemy.direction_x = 0
         enemy.direction_y = 0

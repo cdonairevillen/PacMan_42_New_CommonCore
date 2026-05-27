@@ -58,6 +58,12 @@ class MazeVisualizer:
     def run(self) -> None:
         """Initialise pygame, open the window, and start the event loop."""
         pygame.init()
+        pygame.mixer.init()
+        pygame.mixer.music.load(
+            "assets/sounds/theme.wav"
+        )
+        pygame.mixer.music.set_volume(0.3)
+        pygame.mixer.music.play(-1)
         self.clock = pygame.time.Clock()
         self.font_small = pygame.font.SysFont("monospace", 14)
         self.resize_window()

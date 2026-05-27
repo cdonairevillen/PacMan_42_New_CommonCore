@@ -50,19 +50,20 @@ class GameOver(Screen):
         cx = self.screen.get_width() // 2
         cy = self.screen.get_height() // 2
 
-        title = self.title_font.render("You Lose.", True, Color.GHOST_CORNER.rgb())
+        title = self.title_font.render(
+            "You Lose.", True, Color.GHOST_CORNER.rgb())
         title_rect = title.get_rect(center=(cx, cy - 150))
         self.screen.blit(title, title_rect)
 
-        score_text = self.font.render(f"Score: {self.game_manager.score}", True, Color.TEXT.rgb())
+        score_text = self.font.render(
+            f"Score: {self.game_manager.score}", True, Color.TEXT.rgb())
         score_rect = score_text.get_rect(center=(cx, cy - 60))
         self.screen.blit(score_text, score_rect)
 
-        name_text = self.font.render(f"{self.player_name}_", True, Color.TEXT.rgb())
+        name_text = self.font.render(
+            f"{self.player_name}_", True, Color.TEXT.rgb())
         name_rect = name_text.get_rect(center=(cx, cy))
         self.screen.blit(name_text, name_rect)
 
         self.buttons[0].rect.center = (cx, cy + 80)
         self.buttons[0].draw(self.screen)
-    
-

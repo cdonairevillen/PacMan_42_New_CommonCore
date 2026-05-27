@@ -31,10 +31,12 @@ class MainMenu(Screen):
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_DOWN:
-                self.selected_index = (self.selected_index + 1) % len(self.buttons)
+                self.selected_index = (
+                    self.selected_index + 1) % len(self.buttons)
 
             elif event.key == pygame.K_UP:
-                self.selected_index = (self.selected_index - 1) % len(self.buttons)
+                self.selected_index = (
+                    self.selected_index - 1) % len(self.buttons)
 
             elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
                 self.activate_selected()

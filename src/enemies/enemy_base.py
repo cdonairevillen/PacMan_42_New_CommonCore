@@ -29,6 +29,9 @@ class Enemy:
         self.x = x
         self.y = y
 
+        self.spawn_x = x
+        self.spawn_y = y
+
         self.speed = speed
 
         self.direction_x = 0
