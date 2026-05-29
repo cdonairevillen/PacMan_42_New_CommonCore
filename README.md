@@ -8,7 +8,7 @@ mi estructura de carpetas recomendada seria:
 .
 ├── config.json
 ├── high_score
-│   └── laderboard.json
+│   └── leaderboard.json
 ├── pyproject.toml
 ├── README.md
 ├── resources
@@ -52,7 +52,7 @@ de error y recovery en terminal.
 
 Idea: Este archivo es el base de creacion de el juego. Dependiendo de la escalabilidad
 que queramos tener, podemos modificarlo bastante. Supuestamente en el tenemos que tener
-la base de nuestro juego (ruta  al archivo de laderboard, los niveles accesibles, el ancho
+la base de nuestro juego (ruta  al archivo de leaderboard, los niveles accesibles, el ancho
 de cada nivel...) Si queremos que el programa tenga evolucion, tal vez podriamos hacer que
 este  archivo de paso a configs especificas para cada nivel, dependiendo de lo que queramos
 proyectar (niveles con bajos puntos por cazar fantasmas, niveles con muy pocas monedas, etc.)
@@ -64,15 +64,15 @@ discutir como manejarlo
 
 Tenemos que generar un sistema de scores. Mi idea aqui seria generar un json "nombre": score que solo guarde los 10 primeros jugadores. Con la libreria json es bastante sencillo manipular este archivo.
 
-Cuando se llame al laderboard o al iniciar el juego podemos leer este archivo para tenerlo precomputado y poder modificarlo tras el seteo de una nueva puntuacion. Si el archivo no existe, se generara un archivo nuevo con todas las puntuaciones a 0
+Cuando se llame al leaderboard o al iniciar el juego podemos leer este archivo para tenerlo precomputado y poder modificarlo tras el seteo de una nueva puntuacion. Si el archivo no existe, se generara un archivo nuevo con todas las puntuaciones a 0
 
 Parsearemos el output del jugador a traves de una clase con BaseModel para usar field() y controlar la entrada de datos de manera sencilla. El nombre del jugador debe ser de max 10 caracteres alfanumericos con espacios.
 
 Los scores no pueden ser negativos
 
-Permitir siempre meter el nombre al jugador al ganar o perder(mi forma d ever esto es que llegado el momento el jugador metera sus credenciales y podra chequear la laderboard junto a su score. Si esta entre los 10 primeros, encontrara su score entre la lista, si no, saldra la lista de 10 puntuaciones y su score en la parte inferior. no se registrara en la lista en este caso)
+Permitir siempre meter el nombre al jugador al ganar o perder(mi forma d ever esto es que llegado el momento el jugador metera sus credenciales y podra chequear la leaderboard junto a su score. Si esta entre los 10 primeros, encontrara su score entre la lista, si no, saldra la lista de 10 puntuaciones y su score en la parte inferior. no se registrara en la lista en este caso)
 
-la laderboard debera mostrarse en el main menu (horrible. Tendremos que ver como hacerlo y que no de puto asco.)
+la leaderboard debera mostrarse en el main menu (horrible. Tendremos que ver como hacerlo y que no de puto asco.)
 
 # Logica de generacion
 
@@ -150,7 +150,7 @@ Misma idea que el menu manager. Sistema de botones para:
 
 ## Screan de game over
 
-Muestra el final score con la laderboard y permite al jugador introducir su nombre.
+Muestra el final score con la leaderboard y permite al jugador introducir su nombre.
 
 ## Victory screen 
 

@@ -3,6 +3,7 @@ from UI.main_menu import MainMenu
 from UI.pause_menu import PauseMenu
 from UI.game_over import GameOver
 from UI.victory import Victory
+from UI.leaderboard_menu import UILeader
 import pygame
 
 
@@ -16,7 +17,8 @@ class UIManager():
             State.MENU: MainMenu(game_manager, surface),
             State.PAUSED: PauseMenu(game_manager, surface),
             State.GAME_OVER: GameOver(game_manager, surface),
-            State.VICTORY: Victory(game_manager, surface)
+            State.VICTORY: Victory(game_manager, surface),
+            State.LEADERBOARD: UILeader(game_manager, surface)
         }
         self.current_screen = self.screens[State.MENU]
 

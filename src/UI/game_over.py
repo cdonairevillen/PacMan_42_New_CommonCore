@@ -17,7 +17,10 @@ class GameOver(Screen):
         self.selected_index = 0
 
     def save_score(self):
-        pass
+        self.game_manager.leaderboard.add_score(
+            self.player_name,
+            self.game_manager.score
+        )
 
     def handle_events(self, event):
         if event.type == pygame.KEYDOWN:
@@ -25,7 +28,8 @@ class GameOver(Screen):
                 self.player_name = self.player_name[:-1]
 
             elif event.key == pygame.K_RETURN:
-                self.save_score()
+                if self.game_manager.leaderboard.can_enter(self.game_manager.score):
+                    self.save_score()
                 self.game_manager.state = State.MENU
 
             elif len(self.player_name) < 10:
@@ -36,7 +40,8 @@ class GameOver(Screen):
             for i, button in enumerate(self.buttons):
                 if button.is_clicked(event):
                     self.selected_index = i
-                    self.save_score()
+                    if self.game_manager.leaderboard.can_enter(self.game_manager.score):
+                        self.save_score()
                     self.game_manager.state = State.MENU
 
         elif event.type == pygame.MOUSEMOTION:
@@ -60,10 +65,16 @@ class GameOver(Screen):
         score_rect = score_text.get_rect(center=(cx, cy - 60))
         self.screen.blit(score_text, score_rect)
 
-        name_text = self.font.render(
-            f"{self.player_name}_", True, Color.TEXT.rgb())
-        name_rect = name_text.get_rect(center=(cx, cy))
-        self.screen.blit(name_text, name_rect)
+        can_enter = self.game_manager.leaderboard.can_enter(self.game_manager.score)
 
-        self.buttons[0].rect.center = (cx, cy + 80)
+        if can_enter:
+            name_text = self.font.render(
+                f"{self.player_name}_", True, Color.TEXT.rgb())
+            name_rect = name_text.get_rect(center=(cx, cy))
+            self.screen.blit(name_text, name_rect)
+            self.buttons[0].rect.center = (cx, cy + 80)
+
+        else:
+            self.buttons[0].rect.center = (cx, cy + 20)
+
         self.buttons[0].draw(self.screen)

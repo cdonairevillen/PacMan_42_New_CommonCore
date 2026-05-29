@@ -8,13 +8,14 @@ from enemies.enemy_red import EnemyRed
 from enemies.enemy_pink import EnemyPink
 from enemies.enemy_blue import EnemyBlue
 from enemies.enemy_orange import EnemyOrange
+from leaderboard import Leaderboard
 import random
 
 
 class State(Enum):
 
     MENU = "menu"
-    LADERBOARD = "laderboard"
+    LEADERBOARD = "leaderboard"
     PLAYING = "playing"
     PAUSED = "paused"
     GAME_OVER = "gameover"
@@ -27,6 +28,7 @@ class GameManager():
     def __init__(self, config: dict) -> None:
 
         self.config = config
+        self.leaderboard = Leaderboard(config["highscore_filename"])
 
         # Game info
         self.points_per_gum = config["points_per_pacgum"]
@@ -140,6 +142,7 @@ class GameManager():
         self.state = State.VICTORY
 
     def game_over(self):
+        print(f"game_over called, state -> GAME_OVER")
         self.state = State.GAME_OVER
 
     def update(self, dt):

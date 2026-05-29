@@ -23,6 +23,9 @@ class MainMenu(Screen):
             self.game_manager.reset()
             self.game_manager.state = State.PLAYING
 
+        elif self.selected_index == 1:
+            self.game_manager.state = State.LEADERBOARD
+
         elif self.selected_index == 3:
             pygame.quit()
             sys.exit(0)
@@ -68,5 +71,9 @@ class MainMenu(Screen):
 
             if i == self.selected_index:
                 button.state = ButtonState.SELECTED
+
+            else:
+
+                button.state = ButtonState.NORMAL
 
             button.draw(self.screen)

@@ -111,7 +111,7 @@ class MazeVisualizer:
                 self.running = False
 
             elif event.type == pygame.KEYDOWN:
-                if event.key in (pygame.K_ESCAPE, pygame.K_q):
+                if event.key == pygame.K_ESCAPE:
                     self.running = False
 
             if self.game_manager.state != State.PLAYING:
