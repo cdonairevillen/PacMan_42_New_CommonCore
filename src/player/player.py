@@ -58,6 +58,14 @@ class Player:
 
             self.last_direction = "left"
 
+        elif dy == -1:
+
+            self.last_direction = "up"
+
+        elif dy == 1:
+
+            self.last_direction = "down"
+
     def toggle_cheat_mode(self) -> None:
         """
         Activa o desactiva el cheat mode.

@@ -690,6 +690,54 @@ class MazeVisualizer:
 
         self.player_sprites = {
 
+            "up": [
+
+                pygame.transform.scale(
+                    pygame.image.load(
+                        "assets/player/pacman_up_1.png"
+                    ).convert_alpha(),
+                    size
+                ),
+
+                pygame.transform.scale(
+                    pygame.image.load(
+                        "assets/player/pacman_up_2.png"
+                    ).convert_alpha(),
+                    size
+                ),
+
+                pygame.transform.scale(
+                    pygame.image.load(
+                        "assets/player/pacman_up_3.png"
+                    ).convert_alpha(),
+                    size
+                )
+            ],
+
+            "down": [
+
+                pygame.transform.scale(
+                    pygame.image.load(
+                        "assets/player/pacman_down_1.png"
+                    ).convert_alpha(),
+                    size
+                ),
+
+                pygame.transform.scale(
+                    pygame.image.load(
+                        "assets/player/pacman_down_2.png"
+                    ).convert_alpha(),
+                    size
+                ),
+
+                pygame.transform.scale(
+                    pygame.image.load(
+                        "assets/player/pacman_down_3.png"
+                    ).convert_alpha(),
+                    size
+                )
+            ],
+
             "right": [
 
                 pygame.transform.scale(
