@@ -21,6 +21,7 @@ class State(Enum):
     GAME_OVER = "gameover"
     VICTORY = "victory"
     LOADING = "loading"
+    READY = "ready"
 
 
 class GameManager():
@@ -95,12 +96,19 @@ class GameManager():
                 height=self.config["levels"][self.current_level]["height"],
                 seed=42)
 
-        else:
+        elif self.config["seed"] == 0 or self.config["seed"] is None:
 
             self.current_maze = Maze.build(
                 width=self.config["levels"][self.current_level]["width"],
                 height=self.config["levels"][self.current_level]["height"],
                 seed=0)
+
+        else:
+
+            self.current_maze = Maze.build(
+                width=self.config["levels"][self.current_level]["width"],
+                height=self.config["levels"][self.current_level]["height"],
+                seed=self.config["seed"])
 
         corners = set(self.current_maze.get_corner_cells())
         center = self.current_maze.center
@@ -164,7 +172,7 @@ class GameManager():
 
     def resume(self):
 
-        if self.state == State.PAUSED:
+        if self.state in (State.PAUSED, State.READY):
             self.state = State.PLAYING
 
     def victory(self):
@@ -172,8 +180,12 @@ class GameManager():
         self.state = State.VICTORY
 
     def game_over(self):
-        print(f"game_over called, state -> GAME_OVER")
+
         self.state = State.GAME_OVER
+
+    def ready(self):
+
+        self.state = State.READY
 
     def update(self, dt):
 
@@ -275,6 +287,8 @@ class GameManager():
 
         # Reset fantasmas.
         self.reset_enemy_positions()
+
+        self.ready()
 
     def eat_packgum(self, pacgum):
 

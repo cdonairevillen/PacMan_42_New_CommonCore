@@ -172,8 +172,8 @@ class MazeVisualizer:
             self.draw_cell_backgrounds()
             self.draw_pacgums()
             self.draw_walls()
-            self.draw_player()
             self.draw_enemies()
+            self.draw_player()
             self.draw_hud()
 
         else:

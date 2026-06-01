@@ -1,8 +1,16 @@
 {
     "scores": [
         {
+            "name": "hioo",
+            "score": 2540
+        },
+        {
             "name": "Que tal",
             "score": 1170
+        },
+        {
+            "name": "hey",
+            "score": 420
         },
         {
             "name": "hola",

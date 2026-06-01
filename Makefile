@@ -24,15 +24,15 @@ $(INSTALL_STAMP): $(VENV)/bin/activate $(REQ)
 	$(PY) -m pip install --upgrade pip
 	$(PY) -m pip install --no-cache-dir -r $(REQ)
 	$(PY) -m pip install --no-cache-dir $(MAZE_WHL)
-	touch $(INSTALL_STAMP)
+	@touch $(INSTALL_STAMP)
 
 install: $(INSTALL_STAMP)
 
 run: install
-	$(PY) src/main.py $(ARGS)
+	$(PY) src $(ARGS)
 
 debug: install
-	$(PY) -m pdb src/main.py $(ARGS)
+	$(PY) -m pdb src $(ARGS)
 
 lint: install
 	$(PY) -m flake8 src --exclude .venv
