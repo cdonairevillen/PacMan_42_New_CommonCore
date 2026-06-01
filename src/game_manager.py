@@ -41,6 +41,7 @@ class GameManager():
         self.current_pacgums: list[Pacgum] = []
         self.enemies: list[Enemy] = []
         self.current_maze: Optional[Maze] = None
+        self.large_map_warning_shown = False
         self.build_level(seed=config["seed"])
 
         # Game Conditions
@@ -58,6 +59,35 @@ class GameManager():
     # Level Management
 
     def build_level(self, seed: int) -> None:
+    
+        level = self.config["levels"][self.current_level]
+        width = level["width"]
+        height = level["height"]
+
+        if (
+            not self.large_map_warning_shown
+            and (width > 20 or height > 20)
+        ):
+            print(
+                "\nMaps larger than 20x20 have been detected."
+            )
+            answer = input(
+                "Do you wish to continue with those sizes? (y/n):"
+            ).strip().lower()
+            self.large_map_warning_shown = True
+            if answer != "s":
+                print(
+                    "\n19x19 will be used for all large levels."
+                )
+                for level_cfg in self.config["levels"]:
+                    if (
+                        level_cfg["width"] > 20
+                        or level_cfg["height"] > 20
+                    ):
+                        level_cfg["width"] = 19
+                        level_cfg["height"] = 19
+                width = 19
+                height = 19
 
         if self.current_level == 0:
             self.current_maze = Maze.build(

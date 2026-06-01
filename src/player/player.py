@@ -123,6 +123,11 @@ class Player:
         self.x = maze.center[0]
         self.y = maze.center[1]
 
+        self.direction_x = 0
+        self.direction_y = 0
+
+        self.last_direction = "right"
+
     def get_position(self) -> tuple[int, int]:
         """
         Devuelve la posicion actual.

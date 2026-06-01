@@ -132,6 +132,7 @@ def validate_config(config: dict) -> dict:
             Ya que en el subject pone "The player starts in the middle
             of the maze".
             """
+
             if "width" not in level:
                 print("Width missing. Using default value 15.")
 
