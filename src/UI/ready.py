@@ -1,37 +1,121 @@
-from .screen import Screen
+
 import pygame
+from game_manager import GameManager, State
 from visualizer.colors import Color
+from .screen import Screen
 
 
 class Ready(Screen):
+    """
+    Interstitial screen displayed after the player loses a life.
 
-    def __init__(self, game_manager, surface):
+    Shows the current level, remaining lives as heart sprites,
+    and a blinking 'READY!' prompt. Input is blocked for the first
+    0.5 seconds to prevent accidental skips.
+
+    Attributes:
+        blink_timer: Accumulates dt to drive the blink effect.
+        level_font: Font for the level indicator.
+        ready_font: Font for the 'READY!' text.
+        heart_full: Sprite for a remaining life.
+        heart_empty: Sprite for a lost life.
+    """
+
+    HEART_SIZE: tuple[int, int] = (28, 28)
+    HEART_SPACING: int = 34
+    INPUT_BLOCK_DURATION: float = 0.5
+
+    def __init__(self, game_manager: GameManager,
+                 surface: pygame.Surface) -> None:
+        """
+        Initialise the Ready screen and load heart sprites.
+
+        Args:
+            game_manager: Shared game state.
+            surface: Pygame surface to draw onto.
+        """
         super().__init__(game_manager, surface)
 
-        self.blink_timer: float = 0
-        self.level_font = pygame.font.SysFont("monospace", 32, bold=True)
-        self.ready_font = pygame.font.SysFont("monospace", 22, bold=True)
+        self.blink_timer: float = 0.0
+        self.level_font: pygame.font.Font = pygame.font.SysFont(
+            "monospace", 32, bold=True
+        )
+        self.ready_font: pygame.font.Font = pygame.font.SysFont(
+            "monospace", 48, bold=True
+        )
 
-    def handle_events(self, event):
+        sheet = pygame.image.load(
+            "assets/lifes.png"
+        ).convert_alpha()
+        w = sheet.get_width() // 3
+        h = sheet.get_height()
 
-        if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+        self.heart_full: pygame.Surface = pygame.transform.scale(
+            sheet.subsurface(pygame.Rect(0, 0, w, h)),
+            self.HEART_SIZE,
+        )
+        self.heart_empty: pygame.Surface = pygame.transform.scale(
+            sheet.subsurface(pygame.Rect(w * 2, 0, w, h)),
+            self.HEART_SIZE,
+        )
 
+    def handle_events(self, event: pygame.event.Event) -> None:
+        """
+        Resume play on any key press or mouse click.
+
+        Input is ignored for the first INPUT_BLOCK_DURATION seconds
+        to prevent accidental skips right after a death.
+
+        Args:
+            event: Pygame event to process.
+        """
+        if self.blink_timer < self.INPUT_BLOCK_DURATION:
+            return
+
+        if (
+            event.type == pygame.KEYDOWN
+            or event.type == pygame.MOUSEBUTTONDOWN
+        ):
+            self.blink_timer = 0.0
             self.game_manager.resume()
 
-    def draw(self):
+    def update(self, dt: float) -> None:
+        """
+        Advance the blink timer.
+
+        Args:
+            dt: Delta time in seconds since last frame.
+        """
+        self.blink_timer += dt
+
+    def draw(self) -> None:
+        """Render level indicator, heart sprites, and blinking READY!."""
         self.screen.fill(Color.BG.rgb())
 
         cx = self.screen.get_width() // 2
         cy = self.screen.get_height() // 2
 
-        level = self.level_font.render(f"Level: {self.game_manager.current_level}", True, Color.PACGUM.rgb())
-        level_rect = level.get_rect(center=(cx, cy - 150))
-        self.screen.blit(level, level_rect)
+        level_text = f"Level: {self.game_manager.current_level + 1}"
+        level_surf = self.level_font.render(
+            level_text, True, Color.PACGUM.rgb()
+        )
+        level_rect = level_surf.get_rect(center=(cx, cy - 100))
+        self.screen.blit(level_surf, level_rect)
 
-        ready = self.ready_font.render("READY!", True, Color.PACGUM.rgb())
-        ready_rect = ready.get_rect(center=(cx, cy - 70))
+        max_lives: int = self.game_manager.config["lives"]
+        lives: int = self.game_manager.player.lives
+        total_w = max_lives * self.HEART_SPACING
+        start_x = cx - total_w // 2
+
+        for i in range(max_lives):
+            sprite = self.heart_full if i < lives else self.heart_empty
+            x = start_x + i * self.HEART_SPACING
+            y = cy - self.HEART_SIZE[1] // 2
+            self.screen.blit(sprite, (x, y))
+
         if (self.blink_timer % 1.0) < 0.5:
-            self.screen.blit(ready, ready_rect)
-
-    def update(self, dt):
-        self.blink_timer += dt
+            ready_surf = self.ready_font.render(
+                "READY!", True, Color.PLAYER_SPAWN.rgb()
+            )
+            ready_rect = ready_surf.get_rect(center=(cx, cy + 80))
+            self.screen.blit(ready_surf, ready_rect)

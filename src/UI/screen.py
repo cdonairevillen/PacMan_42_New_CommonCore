@@ -1,4 +1,4 @@
-from __future__ import annotations
+
 from game_manager import GameManager
 from abc import ABC, abstractmethod
 

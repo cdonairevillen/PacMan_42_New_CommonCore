@@ -26,6 +26,9 @@ class MainMenu(Screen):
         elif self.selected_index == 1:
             self.game_manager.state = State.LEADERBOARD
 
+        elif self.selected_index == 2:
+            self.game_manager.state = State.INSTRUCTIONS
+
         elif self.selected_index == 3:
             pygame.quit()
             sys.exit(0)
