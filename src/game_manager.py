@@ -281,22 +281,13 @@ class GameManager():
                     continue
                 if enemy.state == EnemyState.INV:
                     continue
-                elif (
-                    enemy.state == EnemyState.FEAR
-                    and self.player.state == PlayerState.POWER_UP
-                ):
+                if enemy.state == EnemyState.FEAR:
                     self.eat_ghost(enemy)
-                elif (
-                    enemy.state == EnemyState.NORMAL
-                    and self.player.state == PlayerState.NORMAL
-                ):
+                else:
+                    self.check_life()
 
-                    if not self.cheat_mode.invincible:
-
-                        self.check_life()
-
-        if self.time_remining <= 0:
-            self.game_over()
+            if self.time_remining <= 0:
+                self.game_over()
 
     # Player Management
 
@@ -350,7 +341,7 @@ class GameManager():
 
         self.score += self.points_per_ghost
         enemy.state = EnemyState.INV
-        enemy.respawn_timer = 3
+        enemy.respawn_timer = 1
         enemy.x = enemy.spawn_x
         enemy.y = enemy.spawn_y
         enemy.px = float(enemy.x * enemy.cell_size)
@@ -392,10 +383,6 @@ class GameManager():
 
             self.player.pixels_per_second = (
                 self.player.speed * self.player.cell_size
-            )
-
-            self.player.state = (
-                PlayerState.NORMAL
             )
 
             print("Cheat mode disabled")
