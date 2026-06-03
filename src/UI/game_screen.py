@@ -1,7 +1,6 @@
 
 import pygame
 from game_manager import GameManager, State
-from visualizer.colors import Color
 from .screen import Screen
 from .utils.floating_text import FloatingText
 
@@ -76,13 +75,13 @@ class GameScreen(Screen):
 
         elif event.key == pygame.K_c:
             self.game_manager.toggle_cheat_mode()
-        
+
         elif (
             event.key == pygame.K_n
             and self.game_manager.cheat_mode.enabled
         ):
             self.game_manager.skip_level()
-        
+
         elif event.key == pygame.K_v:
             self.game_manager.cheat_mode.toggle_noclip()
 
@@ -108,8 +107,7 @@ class GameScreen(Screen):
         for ft in self.floating_texts:
             ft.update(dt)
         self.floating_texts = [
-            ft for ft in self.floating_texts if ft.alive
-        ]
+            ft for ft in self.floating_texts if ft.alive]
 
     def draw(self) -> None:
         """Render maze, entities, HUD, and floating texts."""
@@ -123,9 +121,7 @@ class GameScreen(Screen):
         viz.draw_entities()
 
         maze = self.game_manager.current_maze
-        y_base = (
-            40 + maze.height * viz.cell_size
-        )
+        y_base = (40 + maze.height * viz.cell_size)
         self.hud.draw(y_base)
 
         self.draw_floating_texts()

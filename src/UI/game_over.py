@@ -1,8 +1,8 @@
 import pygame
 from .screen import Screen
-from .utils.button import Button, ButtonState
+from .utils.button import Button
 from visualizer.colors import Color
-from game_manager import GameManager, State
+from game_manager import State
 
 
 class GameOver(Screen):
@@ -28,7 +28,8 @@ class GameOver(Screen):
                 self.player_name = self.player_name[:-1]
 
             elif event.key == pygame.K_RETURN:
-                if self.game_manager.leaderboard.can_enter(self.game_manager.score):
+                if (self.game_manager.leaderboard.can_enter(
+                     self.game_manager.score)):
                     self.save_score()
                 self.game_manager.state = State.MENU
 
@@ -40,7 +41,8 @@ class GameOver(Screen):
             for i, button in enumerate(self.buttons):
                 if button.is_clicked(event):
                     self.selected_index = i
-                    if self.game_manager.leaderboard.can_enter(self.game_manager.score):
+                    if (self.game_manager.leaderboard.can_enter(
+                         self.game_manager.score)):
                         self.save_score()
                     self.game_manager.state = State.MENU
 
@@ -65,7 +67,8 @@ class GameOver(Screen):
         score_rect = score_text.get_rect(center=(cx, cy - 60))
         self.screen.blit(score_text, score_rect)
 
-        can_enter = self.game_manager.leaderboard.can_enter(self.game_manager.score)
+        can_enter = (self.game_manager.leaderboard.can_enter(
+            self.game_manager.score))
 
         if can_enter:
             name_text = self.font.render(

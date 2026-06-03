@@ -82,16 +82,19 @@ class HUD:
 
         cy = y_base + HUD_HEIGHT // 2
 
-        max_lives: int = gm.config["lives"]
+        max_lives: int = min(gm.config["lives"], 10)
         lives: int = gm.player.lives
         heart_x = 16
+        heart_y_top = cy - HEART_SIZE[1] - 2
+        heart_y_bottom = cy + 2
 
         for i in range(max_lives):
             sprite = self.heart_full if i < lives else self.heart_empty
-            self.surface.blit(
-                sprite,
-                (heart_x + i * HEART_SPACING, cy - HEART_SIZE[1] // 2),
-            )
+            row = i // 5
+            col = i % 5
+            x = heart_x + col * HEART_SPACING
+            y = heart_y_top if row == 0 else heart_y_bottom
+            self.surface.blit(sprite, (x, y))
 
         secs = max(0, int(gm.time_remining))
         mm, ss = divmod(secs, 60)

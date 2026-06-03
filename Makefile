@@ -3,6 +3,7 @@ VENV        := .venv
 ARGS        ?= config.json
 REQ         := resources/requirements.txt
 MAZE_WHL    := resources/mazegenerator-00001-py3-none-any.whl
+HS			:= high_score
 
 PIP         := $(VENV)/bin/pip
 PY          := $(VENV)/bin/python
@@ -30,6 +31,11 @@ install: $(INSTALL_STAMP)
 
 run: install
 	$(PY) src $(ARGS)
+
+restart:
+	@rm -rf $(HS)
+	@echo "Leaderboard deleted. The new leaderboard will be generated \
+	when the game is launched"
 
 debug: install
 	$(PY) -m pdb src $(ARGS)

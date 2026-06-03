@@ -3,7 +3,7 @@ import sys
 from .screen import Screen
 from .utils.button import Button, ButtonState
 from visualizer.colors import Color
-from game_manager import GameManager, State
+from game_manager import State
 
 
 class MainMenu(Screen):

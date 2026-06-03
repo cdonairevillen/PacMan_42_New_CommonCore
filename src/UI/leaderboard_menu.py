@@ -1,8 +1,9 @@
 import pygame
-from game_manager import State, GameManager
+from game_manager import State
 from visualizer.colors import Color
 from .utils.button import Button, ButtonState
 from .screen import Screen
+
 
 class UILeader(Screen):
     def __init__(self, game_manager, surface):
@@ -26,7 +27,7 @@ class UILeader(Screen):
             self.button.handle_event(event)
 
     def draw(self):
-    
+
         self.screen.fill(Color.BG.rgb())
 
         cx = self.screen.get_width() // 2

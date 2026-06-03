@@ -19,14 +19,8 @@ class Player:
     - velocidad
     """
 
-    def __init__(
-        self,
-        x: int,
-        y: int,
-        speed: int,
-        lives: int,
-        cell_size: int = 28,
-    ) -> None:
+    def __init__(self, x: int, y: int, speed: int,
+                 lives: int, cell_size: int = 28) -> None:
 
         self.x = x
         self.y = y
@@ -42,6 +36,7 @@ class Player:
         self.target_py: float = self.py
 
         self.lives = lives
+        self.hit = False
 
         self.direction_x = 0
         self.direction_y = 0
@@ -90,15 +85,6 @@ class Player:
         self.direction_x = dx
         self.direction_y = dy
 
-        if dx == 1:
-            self.last_direction = "right"
-        elif dx == -1:
-            self.last_direction = "left"
-        elif dy == -1:
-            self.last_direction = "up"
-        elif dy == 1:
-            self.last_direction = "down"
-
     def move(self, maze, cheat_mode=None) -> None:
         """
         Mueve al jugador si no hay pared.
@@ -117,6 +103,7 @@ class Player:
 
         # Derecha
         if self.direction_x == 1:
+            self.last_direction = "right"
 
             if noclip:
 
@@ -132,6 +119,7 @@ class Player:
 
         # Izquierda
         elif self.direction_x == -1:
+            self.last_direction = "left"
 
             if noclip:
 
@@ -147,6 +135,7 @@ class Player:
 
         # Arriba
         elif self.direction_y == -1:
+            self.last_direction = "up"
 
             if noclip:
 
@@ -162,6 +151,7 @@ class Player:
 
         # Abajo
         elif self.direction_y == 1:
+            self.last_direction = "down"
 
             if noclip:
 
@@ -195,6 +185,7 @@ class Player:
         self.py = float(self.y * self.cell_size)
         self.target_px = self.px
         self.target_py = self.py
+        self.hit = False
 
         self.direction_x = 0
         self.direction_y = 0

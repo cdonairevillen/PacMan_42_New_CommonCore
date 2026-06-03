@@ -1,7 +1,5 @@
-import sys
 import os
 import json
-
 
 
 class Leaderboard():
@@ -41,7 +39,8 @@ class Leaderboard():
                     if not isinstance(entry.get("name"), str):
                         valid = False
 
-                    if not isinstance(entry.get("score"), int) or entry["score"] < 0:
+                    if not isinstance(
+                         entry.get("score"), int) or entry["score"] < 0:
                         valid = False
 
                     if len(entry["name"].strip()) == 0:
@@ -60,11 +59,12 @@ class Leaderboard():
                     else:
                         print(f"Invalid entry skipped: {entry}")
                         continue
-            
+
             self.save()
 
         except Exception as e:
-            print(f"Corrupted leaderboard: {e}. Regenerating a clean leaderboard")
+            print(f"Corrupted leaderboard: {e}. "
+                  "Regenerating a clean leaderboard")
 
             struct = {"scores": []}
 
@@ -75,7 +75,8 @@ class Leaderboard():
 
         try:
             with open(self.path, "w", encoding="utf-8") as f:
-                json.dump({"scores": self.scores}, f, ensure_ascii=False, indent=4)
+                json.dump(
+                    {"scores": self.scores}, f, ensure_ascii=False, indent=4)
 
         except Exception as e:
             print(f"Error saving leaderboard:{e}")

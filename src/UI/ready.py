@@ -1,6 +1,6 @@
 
 import pygame
-from game_manager import GameManager, State
+from game_manager import GameManager
 from visualizer.colors import Color
 from .screen import Screen
 
@@ -89,6 +89,7 @@ class Ready(Screen):
         self.blink_timer += dt
 
     def draw(self) -> None:
+
         """Render level indicator, heart sprites, and blinking READY!."""
         self.screen.fill(Color.BG.rgb())
 
@@ -102,15 +103,21 @@ class Ready(Screen):
         level_rect = level_surf.get_rect(center=(cx, cy - 100))
         self.screen.blit(level_surf, level_rect)
 
-        max_lives: int = self.game_manager.config["lives"]
+        max_lives: int = min(self.game_manager.config["lives"], 18)
         lives: int = self.game_manager.player.lives
-        total_w = max_lives * self.HEART_SPACING
-        start_x = cx - total_w // 2
+        per_row = 9
+        spacing = self.HEART_SPACING
+        total_rows = (max_lives + per_row - 1) // per_row
 
         for i in range(max_lives):
             sprite = self.heart_full if i < lives else self.heart_empty
-            x = start_x + i * self.HEART_SPACING
-            y = cy - self.HEART_SIZE[1] // 2
+            row = i // per_row
+            col = i % per_row
+            row_width = min(per_row, max_lives - row * per_row) * spacing
+            start_x = cx - row_width // 2
+            x = start_x + col * spacing
+            y = (cy + row * (self.HEART_SIZE[1] + 4)
+                 - (total_rows * (self.HEART_SIZE[1] + 4)) // 2)
             self.screen.blit(sprite, (x, y))
 
         if (self.blink_timer % 1.0) < 0.5:

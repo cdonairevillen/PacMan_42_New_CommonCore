@@ -2,7 +2,7 @@ from __future__ import annotations
 import sys
 import pygame
 from visualizer.colors import Color
-from game_manager import GameManager, State
+from game_manager import GameManager
 from ui_manager import UIManager
 
 
@@ -67,7 +67,6 @@ class MazeVisualizer:
         pygame.display.set_caption(self.title)
         self.load_sprites()
 
-        from UI.game_screen import GameScreen
         self.ui_manager = UIManager(
             self.game_manager, self.screen, self
         )

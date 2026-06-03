@@ -17,5 +17,5 @@ class Screen(ABC):
     def handle_events(self, event):
         pass
 
-    def update(self, dt):          # si queremos meter animaciones
+    def update(self, dt):
         pass
