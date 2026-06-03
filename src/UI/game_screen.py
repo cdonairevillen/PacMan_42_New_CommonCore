@@ -75,7 +75,16 @@ class GameScreen(Screen):
             self.game_manager.pause()
 
         elif event.key == pygame.K_c:
-            self.game_manager.player.toggle_cheat_mode()
+            self.game_manager.toggle_cheat_mode()
+        
+        elif (
+            event.key == pygame.K_n
+            and self.game_manager.cheat_mode.enabled
+        ):
+            self.game_manager.skip_level()
+        
+        elif event.key == pygame.K_v:
+            self.game_manager.cheat_mode.toggle_noclip()
 
         elif event.key in (pygame.K_UP, pygame.K_w):
             self.game_manager.player.set_direction(0, -1)

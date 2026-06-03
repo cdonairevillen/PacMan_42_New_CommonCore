@@ -9,6 +9,7 @@ from enemies.enemy_pink import EnemyPink
 from enemies.enemy_blue import EnemyBlue
 from enemies.enemy_orange import EnemyOrange
 from leaderboard import Leaderboard
+from cheat_mode import CheatMode
 
 
 class State(Enum):
@@ -57,6 +58,8 @@ class GameManager():
                              y=self.current_maze.center[1],
                              lives=config["lives"], speed=5,
                              cell_size=self.cell_size)
+        
+        self.cheat_mode = CheatMode()
 
         self.score = 0
 
@@ -67,6 +70,15 @@ class GameManager():
         level = self.config["levels"][self.current_level]
         width = level["width"]
         height = level["height"]
+
+        print(
+            "LEVEL:",
+            self.current_level,
+            "SIZE:",
+            width,
+            "x",
+            height
+        )
 
         if (
             not self.large_map_warning_shown
@@ -154,18 +166,24 @@ class GameManager():
     def next_level(self) -> bool:
         """
         Advance to the next level or trigger victory.
-
-        Returns:
-            True if a new level was loaded, False if the game is won.
         """
-        self.current_level += 1
 
+        self.current_level += 1
         if self.current_level >= len(self.config["levels"]):
             self.state = State.VICTORY
             return False
 
-        self.state = State.LOADING
-        self.loading_timer = 0.0
+        self.build_level(
+            seed=self.config["seed"]
+        )
+        self.player.respawn(
+            self.current_maze
+        )
+        self.time_remining = (
+            self.level_max_time
+        )
+        self.state = State.PLAYING
+
         return True
 
     # State Management
@@ -210,13 +228,13 @@ class GameManager():
         if self.state != State.PLAYING:
             return
 
-        if not self.player.cheat_mode:
+        if not self.cheat_mode.enabled:
             self.time_remining -= dt
 
         self.move_timer += dt
 
         if self.move_timer >= 1.0 / self.player.speed:
-            self.player.move(self.current_maze)
+            self.player.move(self.current_maze, self.cheat_mode)
             self.move_timer -= 1.0 / self.player.speed
 
         self.player.update_visual(dt)
@@ -226,6 +244,9 @@ class GameManager():
             if self.player.power_timer <= 0:
                 self.player.state = PlayerState.NORMAL
                 for enemy in self.enemies:
+                    if self.cheat_mode.freeze_ghosts:
+                        enemy.update_visual(dt)
+                        continue
                     if enemy.state == EnemyState.FEAR:
                         enemy.state = EnemyState.NORMAL
 
@@ -259,7 +280,7 @@ class GameManager():
 
             enemy_pos = enemy.get_position()
             if enemy_pos == player_pos:
-                if self.player.cheat_mode:
+                if self.cheat_mode.invincible:
                     continue
                 if enemy.state == EnemyState.INV:
                     continue
@@ -272,7 +293,10 @@ class GameManager():
                     enemy.state == EnemyState.NORMAL
                     and self.player.state == PlayerState.NORMAL
                 ):
-                    self.check_life()
+
+                    if not self.cheat_mode.invincible:
+
+                        self.check_life()
 
         if self.time_remining <= 0:
             self.game_over()
@@ -338,3 +362,55 @@ class GameManager():
         enemy.target_py = enemy.py
         enemy.direction_x = 0
         enemy.direction_y = 0
+
+    def toggle_cheat_mode(self):
+        self.cheat_mode.toggle()
+
+        if self.cheat_mode.enabled:
+
+            # Invencibilidad
+            self.cheat_mode.invincible = True
+
+            # Devilitar fanatsmas
+            self.cheat_mode.freeze_ghosts = True
+
+            # Velocidad x2
+            self.player.speed = (
+                self.player.normal_speed * 2
+            )
+
+            self.player.pixels_per_second = (
+                self.player.speed * self.player.cell_size
+            )
+
+        else:
+
+            self.cheat_mode.invincible = False
+
+            self.cheat_mode.freeze_ghosts = False
+
+            self.player.speed = (
+                self.player.normal_speed
+            )
+
+            self.player.pixels_per_second = (
+                self.player.speed * self.player.cell_size
+            )
+
+            self.player.state = (
+                PlayerState.NORMAL
+            )
+
+            print("Cheat mode disabled")
+
+    def skip_level(self) -> None:
+        """
+        Pasa al siguiente nivel si el cheat mode está activo.
+        """
+
+        if not self.cheat_mode.enabled:
+            return
+
+        print("Level skipped")
+
+        self.next_level()

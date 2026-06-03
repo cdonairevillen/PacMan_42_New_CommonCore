@@ -1,4 +1,7 @@
 import json
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import ValidationError
 
 """
 Configuración por defecto del jueguito.
@@ -18,6 +21,53 @@ DEFAULT_CONFIG = {
         }
     ]
 }
+
+
+class LevelConfig(BaseModel):
+
+    width: int = Field(
+        default=15,
+        ge=3,
+        le=99
+    )
+
+    height: int = Field(
+        default=15,
+        ge=3,
+        le=99
+    )
+
+
+class GameConfig(BaseModel):
+
+    lives: int = Field(default=3, ge=1)
+
+    seed: int = Field(default=42, ge=0)
+
+    level_max_time: int = Field(default=90, ge=1)
+
+    points_per_pacgum: int = Field(
+        default=10,
+        ge=0
+    )
+
+    points_per_super_pacgum: int = Field(
+        default=50,
+        ge=0
+    )
+
+    points_per_ghost: int = Field(
+        default=200,
+        ge=0
+    )
+
+    highscore_filename: str = (
+        "high_score/leaderboard.json"
+    )
+
+    levels: list[LevelConfig] = [
+        LevelConfig(width=3, height=3)
+        ]
 
 
 def load_config(path: str) -> dict:
@@ -59,103 +109,32 @@ def load_config(path: str) -> dict:
 
 def validate_config(config: dict) -> dict:
     """
-    Comprueba que los valores del config esten bien.
-    Con esto evitamos payasadas como:
-    {
-        "lives": -400,
-        "seed": "hola",
-        "levels": "patata"
-    }
-    Usamos .copy para no modificar el original y luego el resto
-    fucnionaria por ejemplo:
-    if isinstance(config.get("lives"), int):
-        final_config["lives"] = max(1, config["lives"])
-    Buscaria lives en el JASOOOOOON y si este es igual a 5 hacemos
-    config.get y devolvemos
-    ese 5, con el isinstance comprobamos si es un int y devuelve True(Ya que
-    si nos pasan por ejemplo "alpaca"
-    devolveremos False)
-    Luego estuve mirando para que no nos acepte ni vidas negativas o a 0 y
-    por eso el uso de max
-    ya que nos va a devolver el mayor valor.
+    Valida el config usando Pydantic.
     """
 
-    final_config = DEFAULT_CONFIG.copy()
+    try:
 
-    if isinstance(config.get("lives"), int):
-        final_config["lives"] = max(1, config["lives"])
-    else:
-        print("Invalid lives value. Using default.")
+        validated = GameConfig(**config)
 
-    if isinstance(config.get("seed"), int):
-        final_config["seed"] = max(0, config["seed"])
-    else:
-        print("Invalid seed value. Using default.")
+        final_config = validated.model_dump()
 
-    if isinstance(config.get("level_max_time"), int):
-        final_config["level_max_time"] = max(1, config["level_max_time"])
-    else:
-        print("Invalid level_max_time value. Using default.")
+        for level in final_config["levels"]:
 
-    if isinstance(config.get("points_per_pacgum"), int):
-        final_config["points_per_pacgum"] = max(0, config["points_per_pacgum"])
-    else:
-        print("Invalid points_per_pacgum value. Using default.")
+            # Aseguramos centro.
+            if level["width"] % 2 == 0:
+                level["width"] += 1
 
-    if isinstance(config.get("points_per_super_pacgum"), int):
-        final_config["points_per_super_pacgum"] = max(
-            0, config["points_per_super_pacgum"])
-    else:
-        print("Invalid points_per_super_pacgum value. Using default.")
+            if level["height"] % 2 == 0:
+                level["height"] += 1
 
-    if isinstance(config.get("points_per_ghost"), int):
-        final_config["points_per_ghost"] = max(0, config["points_per_ghost"])
-    else:
-        print("Invalid points_per_ghost value. Using default.")
+        return final_config
 
-    if isinstance(config.get("highscore_filename"), str):
-        final_config["highscore_filename"] = (config["highscore_filename"])
-    else:
-        print("Invalid highscore_filename value. Using default.")
+    except ValidationError as error:
 
-    if isinstance(config.get("levels"), list):
+        print(
+            "Invalid config. Using default config."
+        )
 
-        levels = []
+        print(error)
 
-        for level in config["levels"]:
-            """
-            Ponemos por defecto a 15 por si en el config faltan
-            los datos de width y height,
-            y Luego usamos % 2 para comprobar si el numero es par.
-            Si es par sumamos 1
-            y lo convertimos en impar para asegurar un centro.
-            Ya que en el subject pone "The player starts in the middle
-            of the maze".
-            """
-
-            if "width" not in level:
-                print("Width missing. Using default value 15.")
-
-            if "height" not in level:
-                print("Height missing. Using default value 15.")
-
-            width = level.get("width", 15)
-            height = level.get("height", 15)
-
-            if width % 2 == 0:
-                width += 1
-
-            if height % 2 == 0:
-                height += 1
-
-            levels.append({
-                "width": width,
-                "height": height
-            })
-
-        if levels:
-            final_config["levels"] = levels
-    else:
-        print("Invalid levels list. Using default.")
-
-    return final_config
+        return DEFAULT_CONFIG.copy()

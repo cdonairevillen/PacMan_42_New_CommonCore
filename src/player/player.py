@@ -32,6 +32,7 @@ class Player:
         self.y = y
 
         self.speed = speed
+        self.normal_speed = speed
         self.cell_size = cell_size
         self.pixels_per_second: float = float(speed * cell_size)
 
@@ -44,8 +45,6 @@ class Player:
 
         self.direction_x = 0
         self.direction_y = 0
-
-        self.cheat_mode = False
 
         self.state = PlayerState.NORMAL
         self.power_timer = 0
@@ -100,16 +99,7 @@ class Player:
         elif dy == 1:
             self.last_direction = "down"
 
-    def toggle_cheat_mode(self) -> None:
-        """
-        Activa o desactiva el cheat mode.
-        """
-
-        self.cheat_mode = not self.cheat_mode
-
-        print(f"Cheat mode: {self.cheat_mode}")
-
-    def move(self, maze) -> None:
+    def move(self, maze, cheat_mode=None) -> None:
         """
         Mueve al jugador si no hay pared.
         Actualiza posicion logica y destino visual.
@@ -120,33 +110,70 @@ class Player:
         if cell is None:
             return
 
+        noclip = (
+            cheat_mode is not None
+            and cheat_mode.noclip
+        )
+
         # Derecha
         if self.direction_x == 1:
-            if cell.can_move("E"):
+
+            if noclip:
+
+                if self.x < maze.width - 1:
+                    self.x += 1
+
+            elif cell.can_move("E"):
+
                 self.x += 1
-                self.target_px = float(self.x * self.cell_size)
-                self.target_py = float(self.y * self.cell_size)
+
+            self.target_px = float(self.x * self.cell_size)
+            self.target_py = float(self.y * self.cell_size)
 
         # Izquierda
         elif self.direction_x == -1:
-            if cell.can_move("W"):
+
+            if noclip:
+
+                if self.x > 0:
+                    self.x -= 1
+
+            elif cell.can_move("W"):
+
                 self.x -= 1
-                self.target_px = float(self.x * self.cell_size)
-                self.target_py = float(self.y * self.cell_size)
+
+            self.target_px = float(self.x * self.cell_size)
+            self.target_py = float(self.y * self.cell_size)
 
         # Arriba
         elif self.direction_y == -1:
-            if cell.can_move("N"):
+
+            if noclip:
+
+                if self.y > 0:
+                    self.y -= 1
+
+            elif cell.can_move("N"):
+
                 self.y -= 1
-                self.target_px = float(self.x * self.cell_size)
-                self.target_py = float(self.y * self.cell_size)
+
+            self.target_px = float(self.x * self.cell_size)
+            self.target_py = float(self.y * self.cell_size)
 
         # Abajo
         elif self.direction_y == 1:
-            if cell.can_move("S"):
+
+            if noclip:
+
+                if self.y < maze.height - 1:
+                    self.y += 1
+
+            elif cell.can_move("S"):
+
                 self.y += 1
-                self.target_px = float(self.x * self.cell_size)
-                self.target_py = float(self.y * self.cell_size)
+
+            self.target_px = float(self.x * self.cell_size)
+            self.target_py = float(self.y * self.cell_size)
 
     def lose_life(self) -> None:
         """
