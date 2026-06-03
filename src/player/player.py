@@ -180,10 +180,6 @@ class Player:
         Resta una vida al jugador.
         """
 
-        if self.cheat_mode:
-            print("Cheat mode enabled: no damage taken")
-            return
-
         if self.lives > 0:
             self.lives -= 1
 

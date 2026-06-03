@@ -244,9 +244,6 @@ class GameManager():
             if self.player.power_timer <= 0:
                 self.player.state = PlayerState.NORMAL
                 for enemy in self.enemies:
-                    if self.cheat_mode.freeze_ghosts:
-                        enemy.update_visual(dt)
-                        continue
                     if enemy.state == EnemyState.FEAR:
                         enemy.state = EnemyState.NORMAL
 
