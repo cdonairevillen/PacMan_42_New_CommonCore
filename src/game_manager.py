@@ -63,10 +63,21 @@ class GameManager():
 
         self.score = 0
 
-    # Level Management
-
     def build_level(self, seed: int) -> None:
+        """
+        Build and initialize the current game level.
 
+        Creates a maze, spawns enemies in the corner cells, and populates
+        the maze with pacgums and super pacgums. Large maps may trigger a
+        user confirmation prompt before being generated.
+
+        Args:
+            seed: Seed value provided by the caller. Currently unused,
+                as the maze seed is determined from the game configuration.
+
+        Returns:
+            None
+        """
         level = self.config["levels"][self.current_level]
         width = level["width"]
         height = level["height"]
@@ -155,7 +166,7 @@ class GameManager():
                     Pacgum(x=x, y=y, points=self.points_per_gum))
 
     def reset(self):
-
+        """Reset the game to its initial state."""
         self.score = 0
         self.current_level = 0
         self.time_remining = self.level_max_time
@@ -164,9 +175,7 @@ class GameManager():
         self.player.lives = self.config["lives"]
 
     def next_level(self) -> bool:
-        """
-        Advance to the next level or trigger victory.
-        """
+        """Load the next level or trigger victory if none remain."""
 
         self.current_level += 1
         if self.current_level >= len(self.config["levels"]):
@@ -186,36 +195,35 @@ class GameManager():
 
         return True
 
-    # State Management
-
     def pause(self):
-
+        """Pause the game if it is currently running."""
         if self.state == State.PLAYING:
             self.state = State.PAUSED
 
     def resume(self):
-
+        """Resume the game from a paused or ready state."""
         if self.state in (State.PAUSED, State.READY):
             self.state = State.PLAYING
 
     def victory(self):
-
+        """Set the game state to victory."""
         self.state = State.VICTORY
 
     def game_over(self):
-
+        """Set the game state to game over."""
         self.state = State.GAME_OVER
 
     def ready(self):
-
+        """Set the game state to ready."""
         self.state = State.READY
 
     def update(self, dt: float) -> None:
         """
-        Advance game logic by one frame.
+        Update all game entities and gameplay mechanics.
 
-        Args:
-            dt: Delta time in seconds since the last frame.
+        Processes player and enemy actions, updates timers and visual
+        states, handles collisions, collects pacgums, manages power-up
+        effects, and checks game-over conditions.
         """
         if self.state == State.LOADING:
             self.loading_timer += dt
@@ -247,18 +255,10 @@ class GameManager():
                     if enemy.state == EnemyState.FEAR:
                         enemy.state = EnemyState.NORMAL
 
-        ppx, ppy = self.player.get_visual_pos()
-        pcx_player = ppx + self.cell_size // 2
-        pcy_player = ppy + self.cell_size // 2
+        player_pos = self.player.get_position()
 
         for pacgum in self.current_pacgums:
-            if pacgum.eaten:
-                continue
-
-            pcx = pacgum.x * self.cell_size + self.cell_size // 2
-            pcy = pacgum.y * self.cell_size + self.cell_size // 2
-            dist = ((pcx_player - pcx) ** 2 + (pcy_player - pcy) ** 2) ** 0.5
-            if dist < self.cell_size * 0.5:
+            if not pacgum.eaten and (pacgum.x, pacgum.y) == player_pos:
                 self.eat_packgum(pacgum)
                 break
 
@@ -283,32 +283,27 @@ class GameManager():
 
             enemy.update_visual(dt)
 
-            epx, epy = enemy.get_visual_pos()
-            ecx = epx + self.cell_size // 2
-            ecy = epy + self.cell_size // 2
-            dist_enemy = (((pcx_player - ecx) ** 2
-                           + (pcy_player - ecy) ** 2) ** 0.5)
-
-            if dist_enemy < self.cell_size * 0.6:
+            enemy_pos = enemy.get_position()
+            if enemy_pos == player_pos:
                 if self.cheat_mode.invincible:
                     continue
                 if enemy.state == EnemyState.INV:
                     continue
                 if enemy.state == EnemyState.FEAR:
                     self.eat_ghost(enemy)
-                elif (enemy.state == EnemyState.NORMAL
-                      and self.player.state == PlayerState.NORMAL
-                      and not self.player.hit):
-                    self.player.hit = True
+                else:
                     self.check_life()
 
             if self.time_remining <= 0:
                 self.game_over()
 
-    # Player Management
-
     def reset_enemy_positions(self) -> None:
+        """
+        Reset all enemies to their starting corner positions.
 
+        Restores enemy coordinates, movement direction, visual position,
+        and state for the beginning of a level or respawn sequence.
+        """
         corners = self.current_maze.get_corner_cells()
 
         if len(corners) < 4:
@@ -354,7 +349,12 @@ class GameManager():
             self.next_level()
 
     def eat_ghost(self, enemy):
+        """
+        Handle ghost consumption during a power-up.
 
+        Awards points, sends the ghost back to its spawn position,
+        and temporarily makes it unavailable until respawn.
+        """
         self.score += self.points_per_ghost
         enemy.state = EnemyState.INV
         enemy.respawn_timer = 1
@@ -368,21 +368,19 @@ class GameManager():
         enemy.direction_y = 0
 
     def toggle_cheat_mode(self):
+        """
+        Enable or disable cheat mode.
+
+        Grants invincibility and increased movement speed when
+        enabled, and restores normal gameplay settings when disabled.
+        """
         self.cheat_mode.toggle()
 
         if self.cheat_mode.enabled:
-
-            # Invencibilidad
             self.cheat_mode.invincible = True
-
-            # Devilitar fanatsmas
-            self.cheat_mode.freeze_ghosts = True
-
-            # Velocidad x2
             self.player.speed = (
                 self.player.normal_speed * 2
             )
-
             self.player.pixels_per_second = (
                 self.player.speed * self.player.cell_size
             )
@@ -390,8 +388,6 @@ class GameManager():
         else:
 
             self.cheat_mode.invincible = False
-
-            self.cheat_mode.freeze_ghosts = False
 
             self.player.speed = (
                 self.player.normal_speed
@@ -401,11 +397,28 @@ class GameManager():
                 self.player.speed * self.player.cell_size
             )
 
+            cell = self.current_maze.get_cell(
+                self.player.x,
+                self.player.y
+            )
+
+            if (
+                cell is not None
+                and cell.is_blocked
+            ):
+
+                self.player.respawn(
+                    self.current_maze
+                )
+
             print("Cheat mode disabled")
 
     def skip_level(self) -> None:
         """
-        Pasa al siguiente nivel si el cheat mode está activo.
+        Skip the current level when cheat mode is enabled.
+
+        Advances directly to the next level without completing
+        the remaining objectives.
         """
 
         if not self.cheat_mode.enabled:

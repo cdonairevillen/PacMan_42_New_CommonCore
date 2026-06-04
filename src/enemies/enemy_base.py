@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class EnemyState(Enum):
+    """Represents the possible states of an enemy."""
     INV = "invulnerable"
     NORMAL = "normal"
     FEAR = "fear"
@@ -9,15 +10,11 @@ class EnemyState(Enum):
 
 class Enemy:
     """
-    Clase base de todos los enemigos. Es muy parecida a la de player
-    usaremos esta como pase para luego que los enemigos de colores
-    hereden de esta.
+    Base class for all enemy types.
 
-    Aqui guardamos:
-    - posicion logica (celdas)
-    - posicion visual (pixeles)
-    - velocidad
-    - movimiento
+    Stores the enemy's logical and visual positions, movement
+    information, speed, and state. Specific enemy behaviors are
+    implemented by subclasses.
     """
 
     def __init__(
@@ -27,7 +24,15 @@ class Enemy:
         speed: int,
         cell_size: int = 28,
     ) -> None:
+        """
+        Initialize an enemy instance.
 
+        Args:
+            x: Initial horizontal position in grid cells.
+            y: Initial vertical position in grid cells.
+            speed: Movement speed in cells per second.
+            cell_size: Size of a maze cell in pixels.
+        """
         self.x = x
         self.y = y
 
@@ -82,7 +87,7 @@ class Enemy:
 
     def set_direction(self, dx: int, dy: int) -> None:
         """
-        Cambia la direccion del enemigo.
+        Set the enemy's movement direction.
         """
 
         self.direction_x = dx
@@ -90,8 +95,8 @@ class Enemy:
 
     def move(self, maze) -> None:
         """
-        Mueve al enemigo si no hay pared.
-        Actualiza posicion logica y destino visual.
+        Move the enemy one cell in the current direction.
+        Updates both the logical position and the target visual position.
         """
 
         cell = maze.get_cell(self.x, self.y)
@@ -99,28 +104,24 @@ class Enemy:
         if cell is None:
             return
 
-        # Derecha
         if self.direction_x == 1:
             if cell.can_move("E"):
                 self.x += 1
                 self.target_px = float(self.x * self.cell_size)
                 self.target_py = float(self.y * self.cell_size)
 
-        # Izquierda
         elif self.direction_x == -1:
             if cell.can_move("W"):
                 self.x -= 1
                 self.target_px = float(self.x * self.cell_size)
                 self.target_py = float(self.y * self.cell_size)
 
-        # Arriba
         elif self.direction_y == -1:
             if cell.can_move("N"):
                 self.y -= 1
                 self.target_px = float(self.x * self.cell_size)
                 self.target_py = float(self.y * self.cell_size)
 
-        # Abajo
         elif self.direction_y == 1:
             if cell.can_move("S"):
                 self.y += 1
@@ -129,7 +130,7 @@ class Enemy:
 
     def get_possible_directions(self, maze) -> list[tuple[int, int]]:
         """
-        direcciones posibles.
+        Return all valid movement directions from the current cell.
         """
 
         possible_directions = []
@@ -155,7 +156,7 @@ class Enemy:
 
     def get_position(self) -> tuple[int, int]:
         """
-        Devuelve la posicion actual.
+        Return the enemy's current grid position.
         """
 
         return (self.x, self.y)

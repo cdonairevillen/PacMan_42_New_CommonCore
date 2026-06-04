@@ -3,9 +3,6 @@ from pydantic import BaseModel
 from pydantic import Field
 from pydantic import ValidationError
 
-"""
-Configuración por defecto del jueguito.
-"""
 DEFAULT_CONFIG = {
     "lives": 3,
     "seed": 42,
@@ -24,7 +21,13 @@ DEFAULT_CONFIG = {
 
 
 class LevelConfig(BaseModel):
+    """
+    Represents the configuration settings for a game level.
 
+    Attributes:
+        width: Width of the level grid.
+        height: Height of the level grid.
+    """
     width: int = Field(
         default=15,
         ge=3,
@@ -39,6 +42,19 @@ class LevelConfig(BaseModel):
 
 
 class GameConfig(BaseModel):
+    """
+    Represents the complete game configuration.
+
+    Attributes:
+        lives: Number of lives available to the player.
+        seed: Random seed used for procedural generation.
+        level_max_time: Maximum duration of a level in seconds.
+        points_per_pacgum: Points awarded for collecting a pacgum.
+        points_per_super_pacgum: Points awarded for collecting a super pacgum.
+        points_per_ghost: Points awarded for defeating a ghost.
+        highscore_filename: Path to the high score file.
+        levels: List of level configurations.
+    """
 
     lives: int = Field(default=3, ge=1)
 
@@ -72,7 +88,18 @@ class GameConfig(BaseModel):
 
 def load_config(path: str) -> dict:
     """
-    Carga el config.json y devuelve la configuración validaada.
+    Load a configuration file and validate its contents.
+
+    The function reads a JSON configuration file while ignoring
+    blank lines and lines starting with '#'. If the file cannot
+    be read or parsed, the default configuration is returned.
+
+    Args:
+        path: Path to the configuration file.
+
+    Returns:
+        A validated configuration dictionary. If loading fails,
+        the default configuration is returned.
     """
 
     try:
@@ -80,20 +107,12 @@ def load_config(path: str) -> dict:
             lines = []
 
             for line in file:
-
-                # Eliminamos espacios al principio y final.
                 clean_line = line.strip()
-
-                # Ignoramos comentarios y líneas vacías.
                 if clean_line.startswith("#") or clean_line == "":
                     continue
-
                 lines.append(line)
 
-            # Convertimos todas las líneas en un único texto.
             json_content = "".join(lines)
-
-            # Convertimos el texto JSON a diccionario Python.
             config = json.loads(json_content)
 
     except FileNotFoundError:
@@ -109,7 +128,21 @@ def load_config(path: str) -> dict:
 
 def validate_config(config: dict) -> dict:
     """
-    Valida el config usando Pydantic.
+    Validate and normalize a game configuration.
+
+    The configuration is validated against the GameConfig schema.
+    Level dimensions are adjusted to ensure they are odd numbers,
+    which may be required by the game's map generation logic.
+
+    Args:
+        config: Configuration dictionary to validate.
+
+    Returns:
+        A validated and normalized configuration dictionary.
+
+    Raises:
+        ValidationError: Internally handled when the configuration
+            does not match the expected schema.
     """
 
     try:
@@ -119,8 +152,6 @@ def validate_config(config: dict) -> dict:
         final_config = validated.model_dump()
 
         for level in final_config["levels"]:
-
-            # Aseguramos centro.
             if level["width"] % 2 == 0:
                 level["width"] += 1
 
@@ -130,11 +161,9 @@ def validate_config(config: dict) -> dict:
         return final_config
 
     except ValidationError as error:
-
         print(
             "Invalid config. Using default config."
         )
-
         print(error)
 
         return DEFAULT_CONFIG.copy()
