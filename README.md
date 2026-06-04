@@ -1,202 +1,277 @@
+*This project has been created as part of the 42 curriculum by roherna2, cdonaire*
 
-El proyecto va a ser probado con el siguiente comando:
+# Pacman Ghosts! More ghosts!
 
-$> python3 pac-man.py config.json
+## Description
 
-mi estructura de carpetas recomendada seria:
+This project is a modern reimplementation of the classic Pac-Man game developed in Python using Pygame.
 
-.
-├── config.json
-├── high_score
-│   └── leaderboard.json
-├── pyproject.toml
-├── README.md
-├── resources
-│   ├── mazegenerator-00001-py3-none-any.whl
-│   ├── music
-│   └── sprites
-└── src
-    ├── enemies
-    │   ├── enemy_pink.py
-    │   └── __init__.py
-    ├── parser.py
-    ├── player
-    │   ├── __init__.py
-    │   └── player.py
-    ├── UI
-    │   ├── hud.py
-    │   ├── __init__.py
-    │   ├── main_meny.py
-    │   ├── pause_menu.py
-    │   └── utils
-    └── visualizer
-        ├── __init__.py
-        └── visualizer.py
+The objective is to navigate through procedurally generated mazes, collect Pac-Gums, avoid ghosts, use Super Pac-Gums to enter Power-Up mode, and complete multiple levels before running out of lives or time.
 
-10 directories, 16 files
+The project combines gameplay mechanics, procedural maze generation, configurable settings, score persistence, sprite-based rendering, and a cheat mode designed to facilitate peer review.
 
+---
 
+# Instructions
 
-# Entrada de Datos
+## Requirements
 
-Solo podra coger como argumento un archivo tipo Json.
-El programa solo podra coger 1 argumento
+* Python 3.13+
+* Pygame 2.x
 
-Parseo igual que flyin y amazing (lineas empezadas por # no deben ser consideradas
-                                    podremos soportar otros estilos de comentarios)
-                                    
-Estructura de el archivo queda a nuestra eleccion.
+## Installation
 
-Ante elementos no definidos o invalidos, setear a default. Tenemos que mostrar un mensaje
-de error y recovery en terminal.
+Clone the repository:
 
-Idea: Este archivo es el base de creacion de el juego. Dependiendo de la escalabilidad
-que queramos tener, podemos modificarlo bastante. Supuestamente en el tenemos que tener
-la base de nuestro juego (ruta  al archivo de leaderboard, los niveles accesibles, el ancho
-de cada nivel...) Si queremos que el programa tenga evolucion, tal vez podriamos hacer que
-este  archivo de paso a configs especificas para cada nivel, dependiendo de lo que queramos
-proyectar (niveles con bajos puntos por cazar fantasmas, niveles con muy pocas monedas, etc.)
+```bash
+git clone <repository_url>
+cd PacMan
+```
 
-Tambien podemos hacerlo matematicamente una vez tengamos el mapa seleccionado, asi que podemos
-discutir como manejarlo
+Install dependencies:
 
-# Logica de score*
+```bash
+pip install pygame pydantic
+```
 
-Tenemos que generar un sistema de scores. Mi idea aqui seria generar un json "nombre": score que solo guarde los 10 primeros jugadores. Con la libreria json es bastante sencillo manipular este archivo.
+## Execution
 
-Cuando se llame al leaderboard o al iniciar el juego podemos leer este archivo para tenerlo precomputado y poder modificarlo tras el seteo de una nueva puntuacion. Si el archivo no existe, se generara un archivo nuevo con todas las puntuaciones a 0
+Run the game using:
 
-Parsearemos el output del jugador a traves de una clase con BaseModel para usar field() y controlar la entrada de datos de manera sencilla. El nombre del jugador debe ser de max 10 caracteres alfanumericos con espacios.
+```bash
+python src/pac-man.py config.json
+```
 
-Los scores no pueden ser negativos
+# Features
 
-Permitir siempre meter el nombre al jugador al ganar o perder(mi forma d ever esto es que llegado el momento el jugador metera sus credenciales y podra chequear la leaderboard junto a su score. Si esta entre los 10 primeros, encontrara su score entre la lista, si no, saldra la lista de 10 puntuaciones y su score en la parte inferior. no se registrara en la lista en este caso)
+* Procedural maze generation.
+* Multiple configurable levels.
+* Four ghost types with different behaviours.
+* Pac-Gums and Super Pac-Gums.
+* Power-Up mode.
+* Score system.
+* Persistent highscores.
+* Sprite-based rendering.
+* Background music support.
+* Cheat mode for peer review.
 
-la leaderboard debera mostrarse en el main menu (horrible. Tendremos que ver como hacerlo y que no de puto asco.)
+---
 
-# Logica de generacion
+# Configuration
 
-La generacion de laberintos sera aleatoria quitando el primer nivel, que tendra semilla fixeada (contradiccion con la explicacion del json de entrada)
+The game uses a JSON configuration file.
 
-Los coins deberan generarse en la mayoria de las casillas
+Example:
 
-Los poweups deberan generarse en las esquinas de la mazmorra
+```json
+{
+    "lives": 3,
+    "seed": 42,
+    "level_max_time": 90,
+    "points_per_pacgum": 10,
+    "points_per_super_pacgum": 50,
+    "points_per_ghost": 200,
+    "highscore_filename": "high_score/leaderboard.json",
+    "levels": [
+        {
+            "width": 13,
+            "height": 13
+        }
+    ]
+}
+```
 
-deberan generarse 4 fantasmas, cada uno en una esquina d ela mazmorra
+## Configuration Parameters
 
-el jugador empieza en el punto mas centrico de la mazmorra. Como es un punto recurrente, deberiamos forzar que la salida del jugador siempre este en ese punto.
+| Parameter               | Description                       | Default                     |
+| ----------------------- | --------------------------------- | --------------------------- |
+| lives                   | Initial player lives              | 3                           |
+| seed                    | Maze generation seed              | 42                          |
+| level_max_time          | Maximum time per level            | 90                          |
+| points_per_pacgum       | Points awarded for Pac-Gums       | 10                          |
+| points_per_super_pacgum | Points awarded for Super Pac-Gums | 50                          |
+| points_per_ghost        | Points awarded for eating ghosts  | 200                         |
+| highscore_filename      | Highscore file location           | high_score/leaderboard.json |
+| levels                  | Maze dimensions for each level    | See config                  |
 
+Even maze dimensions are automatically converted to odd values to ensure a valid maze center.
 
-# Player:
+Large maps above 20x20 trigger a warning because maze generation may take significantly longer.
 
-La clase d ejugador necesitara un metodo move que chequee si la siguiente celda  es accesible con respecto a las pareces cerradas que haya. Logica muy parecida a la de generacion de laberinto.
+---
 
-Necesitaremos un metodo estilo keyhook para el movimiento con las teclas WASD. 
+# Highscore
 
-Empezara con 3 vidas. Necesitara un metodo is_hitted() para registrar los golpes del enemigo
+The game stores highscores in a JSON file.
 
-respawnea en su casilla seleccionada (la mas centrica)
+The leaderboard persists between executions and records the highest scores achieved by players.
 
-deberia tener una flag para cuando se coma un powerup y una gestion de tiempo para su duracion.
+This approach was chosen because:
 
-## Game Manager
+* It is simple and portable.
+* No external database is required.
+* The file can be easily inspected and backed up.
+* It matches the scope of a local arcade-style game.
 
-El game manager debera controlar los elementos del mapa. Si el jugador llega a 0 vidas, game over, si se come todos los elementos del mapa, nivel superado. Tambien el game manager debera llevar el control de los puntos alcanzados por el jugador a traves de los valores por token metidos en el config.json (o como hayamos decidido hacerlo).
+The leaderboard is loaded during startup and updated whenever a new highscore is achieved.
 
-Tambien debe llevar un registro de los mapas superados. Si se hacen los 10, se dara por vencido el juego. 
+---
 
-# Enemigos:
+# Maze Generation
 
-Podemos hacer que todos se comporten igual o podemos hacer que funcionen como el pacman original. Total libertad en la logica de persecucion. 
+Maze generation is implemented using the A-Maze-ing package provided by the project.
 
-Respawnean en su esquina cuando son comidos. No hace falta que encuentren el camino, pueden popear(cutre) despues de x tiempo.
+For each level:
 
-# Consumibles
+1. The configured dimensions are loaded.
+2. A maze is generated using the selected seed.
+3. Walkable cells are extracted.
+4. The player is spawned at the maze center.
+5. Ghosts are spawned at corner positions.
+6. Pac-Gums and Super Pac-Gums are distributed across walkable cells.
 
-Mejor que sean una clase a parte, mas sencillos de controlar a traves del game manager. Recomendacion: Herencia. un pacgum base y los powerups que sean lo mismo reinterpretanndo el metodo. 
+The maze generator guarantees a connected and playable maze while preserving procedural variability between levels.
 
-## Extras
+---
 
-debera haber un cheatmode
+# Cheat Mode
 
-# UI
+The project includes a cheat mode intended to facilitate evaluation.
 
-## Menu Manager
+Available features include:
 
-Controla los elementos del menu. Debe tener las siguientes posibilidades:
+* Invincibility.
+* Increased movement speed.
+* Level skipping.
+* Noclip mode (wall traversal).
+* Fast navigation through large mazes.
 
-- Start Game
-- View Scores
-- Instructions
-- Exit
+These tools allow reviewers to quickly verify gameplay mechanics without manually completing every level.
 
-## HUD in game
+---
 
-Displayea los elementos visuales ingame (score, vidas, etc.)
+# Implementation
 
-- Current Score
-- Remaining Lives
-- Current Level
-- Time
+The game is implemented using an object-oriented architecture.
 
-Lee el game manager y displayea sus elementos en el formato y posicion deseada. Una capa superior al render del juego.
+Main systems include:
 
-## Menu de pausa
+* Game state management.
+* Player movement and collision detection.
+* Ghost AI behaviours.
+* Maze generation.
+* Score management.
+* Highscore persistence.
+* Rendering and UI management.
+* Configuration validation through Pydantic.
 
-Misma idea que el menu manager. Sistema de botones para:
+Pygame is responsible for rendering, event handling, audio playback, and timing.
 
-- Resume
-- Return to main menu
+Pydantic is used to validate configuration files and ensure safe runtime parameters.
 
-## Screan de game over
+---
 
-Muestra el final score con la leaderboard y permite al jugador introducir su nombre.
+# General Software Architecture
 
-## Victory screen 
+The project is organized into several independent modules.
 
-lo mismo que "game over" pero mas alegre.
+## Core Components
 
-* con respecto a esto yo me basaria en arcades actuales para realizarlo. UI sera la clase que recoja todas estas subclases y aplicara y destruira cada una en el momento que deba. Cuanto mas modular realicemos este ejercicio, creo que sera mejor.
+### GameManager
 
-# MI VISION:
+Central controller responsible for:
 
-Necesitamos las siguientes clases logicas si o si:
+* Game states.
+* Level transitions.
+* Collision handling.
+* Scoring.
+* Win/loss conditions.
 
-Game Manager
-    - Parser
+### Maze
 
-Menu Manager/UI
-    - Main Menu
-    - Pause Menu
-    - HUD
-    - Special Screens
+Stores the maze structure and provides cell access and path information.
 
-Player
+### Player
 
-Enemies
+Handles:
 
-Consumables
+* Movement.
+* Lives.
+* Power-Up state.
+* Respawn logic.
 
-Visualizer(no se si deberia ser gestionado por el game manager)
+### Enemies
 
-Idea de flujo:
+Ghost classes inherit from a common base class and implement individual movement strategies.
 
-player intenta moverse -> game manager registra su nueva posicion -> visualizer lo muestra
+### Visualizer
 
-player chequea si el movimiento que va a realizar es posible, tambien si ha tocado una moneda o un fantasma, etc. Game manager revisa si eso ha ocurrido y actualiza la informacion acorde
+Responsible for:
 
-Plantea que cada elemento extra (botones, por ejemplo) seran clases seteadas en utils. Mi idea seria usar herencia para no tener duplicaciones. Si necesitamos un boton de exit, que herede del boton base y reinterpretamos su metodo get_push(). Si tenemos utils bases, podemos reinterpretarlos en los archivos .py que les correspondan, lo cual hace que tengamos el repo mucho ma slimpio y ordenado.
+* Sprite rendering.
+* Animation updates.
+* HUD drawing.
+* UI integration.
 
-Necesitaremos un monton de recursos. Sprites de fantasmitas, pacman y consumibles para recrear el movimiento y que no de asco, aunque primero haremos la logica y despues el resto.
+### UI System
 
-# MUY IMPORTANTE:
+Provides:
 
-## Empaquetado del proyecto
+* Main menu.
+* Pause menu.
+* Victory screen.
+* Game over screen.
+* Leaderboard screen.
+* Instructions screen.
 
-mismo empaqueado que el amazing.
+---
 
-## CONTROL DEL PROCESO DEL PROYECTO
+# Resources
 
-Necesitamos registros y control de procesos del proyecto. Organizacion del equipo, analisis de riesgos y posibles formas de solventarlo... Necesitamos darle una vuelta extra a este archivo mientras planteamos el proyecto de cara a empezar con buen pie este punto y no tener que inventarnos todo al ultimo momento. 
+## Documentation
 
-Esto sera el ultimo punto del readme
+* Python Documentation
+* Pygame Documentation
+* Pydantic Documentation
+
+## Tutorials and References
+
+* Pac-Man gameplay analysis
+* Procedural maze generation algorithms
+* Object-oriented game architecture patterns
+
+## AI Usage
+
+Artificial Intelligence tools were used as development assistants for:
+
+* Code reviews.
+* Refactoring suggestions.
+* Architecture discussions.
+* Documentation drafting.
+* Debugging support.
+* Pydantic migration guidance.
+
+All design decisions, implementation choices, testing, and final code integration were performed by the project authors.
+
+---
+
+# Project Management
+
+The project was developed incrementally using Git version control.
+
+Development was divided into several milestones:
+
+1. Maze generation.
+2. Player implementation.
+3. Ghost implementation.
+4. Rendering system.
+5. Game state management.
+6. Highscore persistence.
+7. Cheat mode.
+8. Final testing and polishing.
+
+Project management resources can be found in:
+
+```text
+<project_management_directory>
+```
