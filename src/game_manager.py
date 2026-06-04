@@ -63,6 +63,8 @@ class GameManager():
 
         self.score = 0
 
+    # Level Management
+
     def build_level(self, seed: int) -> None:
         """
         Build and initialize the current game level.
@@ -195,6 +197,8 @@ class GameManager():
 
         return True
 
+    # State Management
+
     def pause(self):
         """Pause the game if it is currently running."""
         if self.state == State.PLAYING:
@@ -255,10 +259,18 @@ class GameManager():
                     if enemy.state == EnemyState.FEAR:
                         enemy.state = EnemyState.NORMAL
 
-        player_pos = self.player.get_position()
+        ppx, ppy = self.player.get_visual_pos()
+        pcx_player = ppx + self.cell_size // 2
+        pcy_player = ppy + self.cell_size // 2
 
         for pacgum in self.current_pacgums:
-            if not pacgum.eaten and (pacgum.x, pacgum.y) == player_pos:
+            if pacgum.eaten:
+                continue
+
+            pcx = pacgum.x * self.cell_size + self.cell_size // 2
+            pcy = pacgum.y * self.cell_size + self.cell_size // 2
+            dist = ((pcx_player - pcx) ** 2 + (pcy_player - pcy) ** 2) ** 0.5
+            if dist < self.cell_size * 0.5:
                 self.eat_packgum(pacgum)
                 break
 
@@ -283,19 +295,29 @@ class GameManager():
 
             enemy.update_visual(dt)
 
-            enemy_pos = enemy.get_position()
-            if enemy_pos == player_pos:
+            epx, epy = enemy.get_visual_pos()
+            ecx = epx + self.cell_size // 2
+            ecy = epy + self.cell_size // 2
+            dist_enemy = (((pcx_player - ecx) ** 2
+                           + (pcy_player - ecy) ** 2) ** 0.5)
+
+            if dist_enemy < self.cell_size * 0.6:
                 if self.cheat_mode.invincible:
                     continue
                 if enemy.state == EnemyState.INV:
                     continue
                 if enemy.state == EnemyState.FEAR:
                     self.eat_ghost(enemy)
-                else:
+                elif (enemy.state == EnemyState.NORMAL
+                      and self.player.state == PlayerState.NORMAL
+                      and not self.player.hit):
+                    self.player.hit = True
                     self.check_life()
 
             if self.time_remining <= 0:
                 self.game_over()
+
+    # Player Management
 
     def reset_enemy_positions(self) -> None:
         """
@@ -340,7 +362,6 @@ class GameManager():
         self.loading_timer = 0.0
 
     def eat_packgum(self, pacgum):
-
         self.score += pacgum.consumed(self.player)
         if isinstance(pacgum, SuperPacgum):
             for enemy in self.enemies:
@@ -357,7 +378,7 @@ class GameManager():
         """
         self.score += self.points_per_ghost
         enemy.state = EnemyState.INV
-        enemy.respawn_timer = 1
+        enemy.respawn_timer = 0.5
         enemy.x = enemy.spawn_x
         enemy.y = enemy.spawn_y
         enemy.px = float(enemy.x * enemy.cell_size)
@@ -377,7 +398,9 @@ class GameManager():
         self.cheat_mode.toggle()
 
         if self.cheat_mode.enabled:
+
             self.cheat_mode.invincible = True
+            self.cheat_mode.freeze_ghosts = True
             self.player.speed = (
                 self.player.normal_speed * 2
             )

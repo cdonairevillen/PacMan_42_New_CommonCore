@@ -71,4 +71,7 @@ class PauseMenu(Screen):
             if i == self.selected_index:
                 button.state = ButtonState.SELECTED
 
+            else:
+                button.state = ButtonState.NORMAL
+
             button.draw(self.screen)

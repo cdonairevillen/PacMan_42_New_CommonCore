@@ -1,6 +1,14 @@
 
 from game_manager import GameManager
 from abc import ABC, abstractmethod
+from enum import Enum
+
+
+class ScrollState(Enum):
+    WAITING = "waiting"
+    SCROLLING = "scrolling"
+    FADING = "fading"
+    PAUSED = "paused"
 
 
 class Screen(ABC):

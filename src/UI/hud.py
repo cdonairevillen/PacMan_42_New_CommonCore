@@ -82,6 +82,7 @@ class HUD:
 
         cy = y_base + HUD_HEIGHT // 2
 
+        # Lives
         max_lives: int = min(gm.config["lives"], 10)
         lives: int = gm.player.lives
         heart_x = 16
@@ -96,6 +97,7 @@ class HUD:
             y = heart_y_top if row == 0 else heart_y_bottom
             self.surface.blit(sprite, (x, y))
 
+        # Time
         secs = max(0, int(gm.time_remining))
         mm, ss = divmod(secs, 60)
         clock_str = f"{mm:02d}:{ss:02d}"
@@ -106,6 +108,7 @@ class HUD:
         clock_rect = clock_surf.get_rect(center=(sw // 2, cy))
         self.surface.blit(clock_surf, clock_rect)
 
+        # Score
         score_str = f"SCORE  {gm.score:06d}"
         score_surf = self.font_score.render(
             score_str, True, Color.TEXT.rgb()
@@ -115,6 +118,7 @@ class HUD:
         )
         self.surface.blit(score_surf, score_rect)
 
+        # Info
         level_str = f"LEVEL  {gm.current_level + 1}"
         level_surf = self.font_score.render(
             level_str, True, Color.TEXT_DIM.rgb()
@@ -123,3 +127,12 @@ class HUD:
             midright=(sw - 16, cy + 10)
         )
         self.surface.blit(level_surf, level_rect)
+
+        if gm.cheat_mode.enabled:
+            cheat_surf = self.font_score.render("C", True,
+                                                Color.PLAYER_SPAWN.rgb())
+            
+            cheat_rect = cheat_surf.get_rect(midright=(sw - 16 - 90,
+                                                       cy + 10))
+            
+            self.surface.blit(cheat_surf, cheat_rect)

@@ -1,8 +1,44 @@
 {
     "scores": [
         {
+            "name": "GOD",
+            "score": 100060
+        },
+        {
             "name": "Hola",
             "score": 200
+        },
+        {
+            "name": "hola",
+            "score": 130
+        },
+        {
+            "name": "jjeje",
+            "score": 110
+        },
+        {
+            "name": "pepe",
+            "score": 110
+        },
+        {
+            "name": "hijputilla",
+            "score": 110
+        },
+        {
+            "name": "loco",
+            "score": 100
+        },
+        {
+            "name": "ruben",
+            "score": 100
+        },
+        {
+            "name": "jeje",
+            "score": 100
+        },
+        {
+            "name": "holaamigo",
+            "score": 90
         }
     ]
 }

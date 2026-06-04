@@ -1,5 +1,4 @@
 import random
-
 from enemies.enemy_base import Enemy
 
 

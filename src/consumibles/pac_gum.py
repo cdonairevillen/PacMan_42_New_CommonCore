@@ -6,9 +6,7 @@ class Pacgum():
     Collectible item that awards points when consumed.
     """
     def __init__(self, x, y, points):
-        """
-        Initialize a pacgum at the given position.
-        """
+
         self.x = x
         self.y = y
         self.eaten = False

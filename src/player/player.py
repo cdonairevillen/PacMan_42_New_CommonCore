@@ -15,14 +15,8 @@ class Player:
     visual position in pixels, movement data, lives, and speed.
     """
 
-    def __init__(
-        self,
-        x: int,
-        y: int,
-        speed: int,
-        lives: int,
-        cell_size: int = 28,
-    ) -> None:
+    def __init__(self, x: int, y: int, speed: int,
+                 lives: int, cell_size: int = 28) -> None:
         """
         Initialize a player instance.
 
@@ -47,6 +41,7 @@ class Player:
         self.target_py: float = self.py
 
         self.lives = lives
+        self.hit = False
 
         self.direction_x = 0
         self.direction_y = 0
@@ -97,15 +92,6 @@ class Player:
         self.direction_x = dx
         self.direction_y = dy
 
-        if dx == 1:
-            self.last_direction = "right"
-        elif dx == -1:
-            self.last_direction = "left"
-        elif dy == -1:
-            self.last_direction = "up"
-        elif dy == 1:
-            self.last_direction = "down"
-
     def move(self, maze, cheat_mode=None) -> None:
         """
         Move the player within the maze.
@@ -118,15 +104,17 @@ class Player:
 
         if cell is None:
             return
+
         noclip = (
             cheat_mode is not None
             and cheat_mode.noclip
         )
-
         if self.direction_x == 1:
+            self.last_direction = "right"
             if noclip:
                 if self.x < maze.width - 1:
                     self.x += 1
+
             elif cell.can_move("E"):
 
                 self.x += 1
@@ -134,16 +122,18 @@ class Player:
             self.target_py = float(self.y * self.cell_size)
 
         elif self.direction_x == -1:
+            self.last_direction = "left"
             if noclip:
-
                 if self.x > 0:
                     self.x -= 1
             elif cell.can_move("W"):
                 self.x -= 1
+
             self.target_px = float(self.x * self.cell_size)
             self.target_py = float(self.y * self.cell_size)
 
         elif self.direction_y == -1:
+            self.last_direction = "up"
             if noclip:
                 if self.y > 0:
                     self.y -= 1
@@ -153,6 +143,7 @@ class Player:
             self.target_py = float(self.y * self.cell_size)
 
         elif self.direction_y == 1:
+            self.last_direction = "down"
             if noclip:
                 if self.y < maze.height - 1:
                     self.y += 1
@@ -183,6 +174,7 @@ class Player:
         self.py = float(self.y * self.cell_size)
         self.target_px = self.px
         self.target_py = self.py
+        self.hit = False
 
         self.direction_x = 0
         self.direction_y = 0
@@ -193,4 +185,5 @@ class Player:
         """
         Return the player's current grid position.
         """
+
         return (self.x, self.y)
