@@ -30,7 +30,7 @@ $(INSTALL_STAMP): $(VENV)/bin/activate $(REQ)
 install: $(INSTALL_STAMP)
 
 run: install
-	$(PY) src $(ARGS)
+	$(PY) pac-man.py $(ARGS)
 
 restart:
 	@rm -rf $(HS)

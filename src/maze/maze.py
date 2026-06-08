@@ -1,12 +1,10 @@
 
 from __future__ import annotations
-from dataclasses import dataclass
 from typing import Optional
 from maze.cell import Cell
 from mazegenerator.mazegenerator import MazeGenerator
 
 
-@dataclass
 class Maze:
     def __init__(self, cells: list[list[Cell]],
                  entry: tuple[int, int],

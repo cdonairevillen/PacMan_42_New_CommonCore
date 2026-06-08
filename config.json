@@ -1,5 +1,5 @@
 {
-    "lives": 1,
+    "lives": 3,
     "seed": 49,
     "level_max_time": 90,
 
@@ -11,8 +11,8 @@
 
     "levels": [
         {
-            "width": 13,
-            "height": 13
+            "width": 14,
+            "height": 8
         },
         {
             "width": 15,

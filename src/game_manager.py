@@ -10,6 +10,8 @@ from enemies.enemy_blue import EnemyBlue
 from enemies.enemy_orange import EnemyOrange
 from leaderboard import Leaderboard
 from cheat_mode import CheatMode
+from visualizer.visual_config import VisualConfig
+import random
 
 
 class State(Enum):
@@ -22,6 +24,13 @@ class State(Enum):
     LOADING = "loading"
     READY = "ready"
     INSTRUCTIONS = "instructions"
+
+
+class InvPhase(Enum):
+    """Sub-states for the INV ghost return sequence."""
+    WAITING = "waiting"
+    RETURNING = "returning"
+    ARRIVED = "arrived"
 
 
 class GameManager():
@@ -37,7 +46,7 @@ class GameManager():
         self.points_per_ghost = config["points_per_ghost"]
         self.loading_timer: float = 0.0
         self.loading_duration: float = 2.0
-        self.cell_size: int = 28
+        self.cell_size: int = VisualConfig.cell_size
 
         # Game State
         self.state = State.MENU
@@ -276,12 +285,8 @@ class GameManager():
 
         for enemy in self.enemies:
             if enemy.state == EnemyState.INV:
-                enemy.respawn_timer -= dt
-                if enemy.respawn_timer <= 0:
-                    if self.player.state == PlayerState.POWER_UP:
-                        enemy.state = EnemyState.FEAR
-                    else:
-                        enemy.state = EnemyState.NORMAL
+                self.update_inv_enemy(enemy, dt)
+                continue
 
             enemy.move_timer += dt
 
@@ -304,8 +309,6 @@ class GameManager():
             if dist_enemy < self.cell_size * 0.6:
                 if self.cheat_mode.invincible:
                     continue
-                if enemy.state == EnemyState.INV:
-                    continue
                 if enemy.state == EnemyState.FEAR:
                     self.eat_ghost(enemy)
                 elif (enemy.state == EnemyState.NORMAL
@@ -316,6 +319,84 @@ class GameManager():
 
             if self.time_remining <= 0:
                 self.game_over()
+
+    def update_inv_enemy(self, enemy: Enemy, dt: float) -> None:
+        """
+        Update an enemy in INV state through its three phases.
+
+        WAITING — static with slow blink, 1.5s before moving.
+        RETURNING — moves via BFS to target corner, fast blink.
+        ARRIVED — moves normally in INV for 2s, then transitions.
+
+        Args:
+            enemy: Enemy in INV state.
+            dt: Delta time in seconds.
+        """
+        enemy.blink_timer += dt
+
+        if enemy.inv_phase == InvPhase.WAITING:
+            enemy.respawn_timer -= dt
+            if enemy.respawn_timer <= 0:
+                enemy.inv_phase = InvPhase.RETURNING
+
+        elif enemy.inv_phase == InvPhase.RETURNING:
+            enemy.move_timer += dt
+            if enemy.move_timer >= 1.0 / enemy.speed:
+                self.move_enemy_toward_spawn(enemy)
+                enemy.move_timer -= 1.0 / enemy.speed
+            enemy.update_visual(dt)
+
+            at_target = (
+                enemy.x == enemy.target_x
+                and enemy.y == enemy.target_y
+                and not enemy.return_path
+            )
+            if at_target:
+                enemy.inv_phase = InvPhase.ARRIVED
+                enemy.respawn_timer = 2.0
+                enemy.speed = enemy.normal_speed
+                enemy.pixels_per_second = (
+                    enemy.speed * enemy.cell_size
+                )
+
+        elif enemy.inv_phase == InvPhase.ARRIVED:
+            enemy.move_timer += dt
+            if enemy.move_timer >= 1.0 / enemy.speed:
+                if isinstance(enemy, EnemyOrange):
+                    enemy.choose_direction(self.current_maze)
+                else:
+                    enemy.choose_direction(self.player, self.current_maze)
+                enemy.move(self.current_maze)
+                enemy.move_timer -= 1.0 / enemy.speed
+            enemy.update_visual(dt)
+
+            enemy.respawn_timer -= dt
+            if enemy.respawn_timer <= 0:
+                enemy.blink_timer = 0.0
+                if self.player.state == PlayerState.POWER_UP:
+                    enemy.state = EnemyState.FEAR
+                else:
+                    enemy.state = EnemyState.NORMAL
+
+    def move_enemy_toward_spawn(self, enemy: Enemy) -> None:
+        """
+        Advance enemy one step along its BFS path to target corner.
+
+        Args:
+            enemy: The enemy currently returning to its corner.
+        """
+        if not enemy.return_path:
+            return
+
+        nx, ny = enemy.return_path.pop(0)
+        dx = nx - enemy.x
+        dy = ny - enemy.y
+        enemy.direction_x = dx
+        enemy.direction_y = dy
+        enemy.x = nx
+        enemy.y = ny
+        enemy.target_px = float(nx * enemy.cell_size)
+        enemy.target_py = float(ny * enemy.cell_size)
 
     # Player Management
 
@@ -340,6 +421,12 @@ class GameManager():
             enemy.direction_x = 0
             enemy.direction_y = 0
             enemy.state = EnemyState.NORMAL
+            enemy.return_path = []
+            enemy.blink_timer = 0.0
+            enemy.speed = enemy.normal_speed
+            enemy.pixels_per_second = (
+                enemy.speed * enemy.cell_size
+            )
             enemy.px = float(enemy.x * enemy.cell_size)
             enemy.py = float(enemy.y * enemy.cell_size)
             enemy.target_px = enemy.px
@@ -369,24 +456,34 @@ class GameManager():
         if not any(not p.eaten for p in self.current_pacgums):
             self.next_level()
 
-    def eat_ghost(self, enemy):
+    def eat_ghost(self, enemy: Enemy) -> None:
         """
         Handle ghost consumption during a power-up.
 
-        Awards points, sends the ghost back to its spawn position,
-        and temporarily makes it unavailable until respawn.
+        Enemy waits 1.5s, then returns to a random corner via BFS
+        at triple speed, then moves normally in INV for 2s.
+
+        Args:
+            enemy: The ghost being consumed.
         """
         self.score += self.points_per_ghost
         enemy.state = EnemyState.INV
-        enemy.respawn_timer = 0.5
-        enemy.x = enemy.spawn_x
-        enemy.y = enemy.spawn_y
-        enemy.px = float(enemy.x * enemy.cell_size)
-        enemy.py = float(enemy.y * enemy.cell_size)
-        enemy.target_px = enemy.px
-        enemy.target_py = enemy.py
+        enemy.inv_phase = InvPhase.WAITING
+        enemy.blink_timer = 0.0
+        enemy.respawn_timer = 1.5
         enemy.direction_x = 0
         enemy.direction_y = 0
+
+        corners = list(self.current_maze.get_corner_cells())
+        tx, ty = random.choice(corners)
+        enemy.target_x = tx
+        enemy.target_y = ty
+
+        enemy.speed = enemy.normal_speed * 3.0
+        enemy.pixels_per_second = enemy.speed * enemy.cell_size
+        enemy.return_path = enemy.find_path_to(
+            tx, ty, self.current_maze
+        )
 
     def toggle_cheat_mode(self):
         """
