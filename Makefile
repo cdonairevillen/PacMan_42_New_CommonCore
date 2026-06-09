@@ -59,6 +59,7 @@ clean:
 	@rm -rf .mypy_cache
 	@rm -rf dist
 	@rm -rf build
+	@rm pac-man.spec
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 
 re: clean run
