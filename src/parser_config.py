@@ -5,7 +5,7 @@ from pydantic import ValidationError
 
 DEFAULT_CONFIG = {
     "lives": 3,
-    "seed": 42,
+    "seed": 0,
     "level_max_time": 90,
     "points_per_pacgum": 10,
     "points_per_super_pacgum": 50,
@@ -13,8 +13,44 @@ DEFAULT_CONFIG = {
     "highscore_filename": "high_score/leaderboard.json",
     "levels": [
         {
-            "width": 3,
-            "height": 3
+            "width": 12,
+            "height": 10
+        },
+        {
+            "width": 15,
+            "height": 15
+        },
+        {
+            "width": 9,
+            "height": 18
+        },
+        {
+            "width": 17,
+            "height": 17
+        },
+        {
+            "width": 9,
+            "height": 15
+        },
+        {
+            "width": 7,
+            "height": 15
+        },
+        {
+            "width": 12,
+            "height": 12
+        },
+        {
+            "width": 12,
+            "height": 12
+        },
+        {
+            "width": 18,
+            "height": 18
+        },
+        {
+            "width": 19,
+            "height": 15
         }
     ]
 }

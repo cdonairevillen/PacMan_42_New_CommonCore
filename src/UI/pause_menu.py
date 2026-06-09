@@ -17,14 +17,14 @@ class PauseMenu(Screen):
         self.buttons = [Button(0, 0, 200, 50, "Resume"),
                         Button(0, 0, 200, 50, "Main Menu")]
 
-    def activate_selected(self):
+    def activate_selected(self) -> None:
         if self.selected_index == 0:
             self.game_manager.state = State.PLAYING
 
         elif self.selected_index == 1:
             self.game_manager.state = State.MENU
 
-    def handle_events(self, event):
+    def handle_events(self, event: pygame.event.Event) -> None:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_DOWN:
@@ -48,7 +48,7 @@ class PauseMenu(Screen):
             for button in self.buttons:
                 button.handle_event(event)
 
-    def draw(self):
+    def draw(self) -> None:
         cx = self.screen.get_width() // 2
         cy = self.screen.get_height() // 2
 

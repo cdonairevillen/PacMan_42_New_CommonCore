@@ -1,6 +1,6 @@
 import random
-
 from enemies.enemy_base import Enemy
+from maze.maze import Maze
 
 
 class EnemyOrange(Enemy):
@@ -8,7 +8,7 @@ class EnemyOrange(Enemy):
     Orange ghost with random movement behavior.
     """
 
-    def choose_direction(self, maze) -> None:
+    def choose_direction(self, maze: Maze) -> None:
         """
         Choose a random valid movement direction.
 

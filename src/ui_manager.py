@@ -1,4 +1,8 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from visualizer.visualizer import MazeVisualizer
 import pygame
 from game_manager import GameManager, State
 from UI.main_menu import MainMenu
@@ -26,7 +30,8 @@ class UIManager:
     """
 
     def __init__(self, game_manager: GameManager,
-                 surface: pygame.Surface, visualizer: object) -> None:
+                 surface: pygame.Surface,
+                 visualizer: "MazeVisualizer") -> None:
         """
         Initialise all screens and set the initial active screen.
 

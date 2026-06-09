@@ -1,5 +1,6 @@
 import os
 import json
+from typing import Any
 
 
 class Leaderboard():
@@ -81,7 +82,7 @@ class Leaderboard():
         except Exception as e:
             print(f"Error saving leaderboard:{e}")
 
-    def can_enter(self, score) -> bool:
+    def can_enter(self, score: int) -> Any:
 
         if len(self.scores) < 10:
             return True

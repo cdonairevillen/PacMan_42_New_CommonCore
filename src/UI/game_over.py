@@ -2,12 +2,13 @@ import pygame
 from .screen import Screen, ScrollState
 from .utils.button import Button
 from visualizer.colors import Color
-from game_manager import State
+from game_manager import State, GameManager
 
 
 class GameOver(Screen):
 
-    def __init__(self, game_manager, surface) -> None:
+    def __init__(self, game_manager: GameManager,
+                 surface: pygame.surface.Surface) -> None:
         super().__init__(game_manager, surface)
 
         self.player_name = ""

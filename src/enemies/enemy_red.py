@@ -1,5 +1,7 @@
 import random
 from enemies.enemy_base import Enemy
+from player.player import Player
+from maze.maze import Maze
 
 
 class EnemyRed(Enemy):
@@ -7,7 +9,7 @@ class EnemyRed(Enemy):
     Red ghost that actively pursues nearby players.
     """
 
-    def choose_direction(self, player, maze) -> None:
+    def choose_direction(self, player: Player, maze: Maze) -> None:
         """
         Choose a direction based on the player's position.
 

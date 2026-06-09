@@ -1,4 +1,6 @@
 from enum import Enum
+from maze.maze import Maze
+from cheat_mode import CheatMode
 
 
 class PlayerState(Enum):
@@ -92,7 +94,7 @@ class Player:
         self.direction_x = dx
         self.direction_y = dy
 
-    def move(self, maze, cheat_mode=None) -> None:
+    def move(self, maze: Maze, cheat_mode: CheatMode | None = None) -> None:
         """
         Move the player within the maze.
 
@@ -160,7 +162,7 @@ class Player:
         if self.lives > 0:
             self.lives -= 1
 
-    def respawn(self, maze) -> None:
+    def respawn(self, maze: Maze) -> None:
         """
         Reset the player to the center of the maze.
 

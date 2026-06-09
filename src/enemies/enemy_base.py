@@ -1,5 +1,6 @@
 from __future__ import annotations
 from enum import Enum
+from maze.maze import Maze
 
 
 class EnemyState(Enum):
@@ -100,7 +101,7 @@ class Enemy:
         self.direction_x = dx
         self.direction_y = dy
 
-    def move(self, maze) -> None:
+    def move(self, maze: Maze) -> None:
         """
         Move the enemy one cell in the current direction.
         Updates both the logical position and the target visual
@@ -136,7 +137,7 @@ class Enemy:
                 self.target_px = float(self.x * self.cell_size)
                 self.target_py = float(self.y * self.cell_size)
 
-    def get_possible_directions(self, maze) -> list[tuple[int, int]]:
+    def get_possible_directions(self, maze: Maze) -> list[tuple[int, int]]:
         """
         Return all valid movement directions from the current cell.
         """

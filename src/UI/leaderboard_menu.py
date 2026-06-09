@@ -1,5 +1,5 @@
 import pygame
-from game_manager import State
+from game_manager import State, GameManager
 from visualizer.colors import Color
 from .utils.button import Button, ButtonState
 from .screen import Screen
@@ -11,7 +11,8 @@ class UILeader(Screen):
     SCROLL_WINDOW_H: int = 300
     SCROLL_SPEED: int = 35
 
-    def __init__(self, game_manager, surface):
+    def __init__(self, game_manager: GameManager,
+                 surface: pygame.surface.Surface) -> None:
         super().__init__(game_manager, surface)
 
         self.font = pygame.font.SysFont("monospace", 24, bold=False)
@@ -26,7 +27,7 @@ class UILeader(Screen):
         total_h = len(scores) * self.LINE_HEIGHT
         return max(0, total_h - self.SCROLL_WINDOW_H)
 
-    def handle_events(self, event):
+    def handle_events(self, event: pygame.event.Event) -> None:
         if event.type == pygame.KEYDOWN:
             if event.key in (pygame.K_RETURN, pygame.K_SPACE,
                              pygame.K_ESCAPE):
@@ -64,7 +65,7 @@ class UILeader(Screen):
             self.selected = False
             self.button.handle_event(event)
 
-    def draw(self):
+    def draw(self) -> None:
         self.screen.fill(Color.BG.rgb())
 
         cx = self.screen.get_width() // 2

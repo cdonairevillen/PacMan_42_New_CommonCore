@@ -1,6 +1,7 @@
 import random
-
 from enemies.enemy_base import Enemy
+from player.player import Player
+from maze.maze import Maze
 
 
 class EnemyPink(Enemy):
@@ -8,7 +9,7 @@ class EnemyPink(Enemy):
     Pink ghost that prioritizes vertical pursuit.
     """
 
-    def choose_direction(self, player, maze) -> None:
+    def choose_direction(self, player: Player, maze: Maze) -> None:
         """
         Choose a direction toward the player.
 

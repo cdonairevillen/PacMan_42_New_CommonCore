@@ -10,6 +10,7 @@ from enemies.enemy_orange import EnemyOrange
 from leaderboard import Leaderboard
 from cheat_mode import CheatMode
 from visualizer.visual_config import VisualConfig
+import random
 
 
 class State(Enum):
@@ -118,7 +119,7 @@ class GameManager():
             self.current_maze = Maze.build(
                 width=self.config["levels"][self.current_level]["width"],
                 height=self.config["levels"][self.current_level]["height"],
-                seed=0)
+                seed=int(random.random()))
 
         else:
             self.current_maze = Maze.build(
@@ -156,7 +157,7 @@ class GameManager():
                 self.current_pacgums.append(
                     Pacgum(x=x, y=y, points=self.points_per_gum))
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset the game to its initial state."""
         self.score = 0
         self.current_level = 0
@@ -181,25 +182,25 @@ class GameManager():
 
     # State Management
 
-    def pause(self):
+    def pause(self) -> None:
         """Pause the game if it is currently running."""
         if self.state == State.PLAYING:
             self.state = State.PAUSED
 
-    def resume(self):
+    def resume(self) -> None:
         """Resume the game from a paused or ready state."""
         if self.state in (State.PAUSED, State.READY):
             self.state = State.PLAYING
 
-    def victory(self):
+    def victory(self) -> None:
         """Set the game state to victory."""
         self.state = State.VICTORY
 
-    def game_over(self):
+    def game_over(self) -> None:
         """Set the game state to game over."""
         self.state = State.GAME_OVER
 
-    def ready(self):
+    def ready(self) -> None:
         """Set the game state to ready."""
         self.state = State.READY
 
@@ -356,7 +357,7 @@ class GameManager():
         self.state = State.LOADING
         self.loading_timer = 0.0
 
-    def eat_packgum(self, pacgum):
+    def eat_packgum(self, pacgum: Pacgum) -> None:
         self.score += pacgum.consumed(self.player)
         if isinstance(pacgum, SuperPacgum):
             for enemy in self.enemies:
@@ -386,7 +387,7 @@ class GameManager():
         enemy.direction_x = 0
         enemy.direction_y = 0
 
-    def toggle_cheat_mode(self):
+    def toggle_cheat_mode(self) -> None:
         """
         Enable or disable cheat mode.
 
@@ -398,7 +399,6 @@ class GameManager():
         if self.cheat_mode.enabled:
 
             self.cheat_mode.invincible = True
-            self.cheat_mode.freeze_ghosts = True
             self.player.speed = (
                 self.player.normal_speed * 2
             )

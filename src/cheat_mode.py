@@ -3,7 +3,7 @@ class CheatMode:
     Manage cheat mode features such as invincibility,
     speed boosts, and noclip movement.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialize all cheat options as disabled.
         """
@@ -12,7 +12,7 @@ class CheatMode:
         self.invincible = False
         self.noclip = False
 
-    def toggle(self):
+    def toggle(self) -> None:
         """
         Enable or disable cheat mode and its default effects.
         """
@@ -25,7 +25,7 @@ class CheatMode:
             f"Cheat mode: {self.enabled}"
         )
 
-    def toggle_noclip(self):
+    def toggle_noclip(self) -> None:
         """
         Toggle noclip mode when cheat mode is active.
         """

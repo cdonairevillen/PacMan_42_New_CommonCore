@@ -1,12 +1,18 @@
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from visualizer.visualizer import MazeVisualizer
 import pygame
 from game_manager import GameManager, State
 from .screen import Screen
 from .utils.floating_text import FloatingText
-from visualizer.visualizer import MazeVisualizer
 
 
 class GameScreen(Screen):
+
     """
     Orchestrates all in-game rendering.
 
@@ -22,7 +28,7 @@ class GameScreen(Screen):
     """
 
     def __init__(self, game_manager: GameManager, surface: pygame.Surface,
-                 visualizer: object) -> None:
+                 visualizer: "MazeVisualizer") -> None:
         """
         Initialise the GameScreen.
 

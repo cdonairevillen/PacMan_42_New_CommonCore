@@ -3,12 +3,13 @@ import sys
 from .screen import Screen
 from .utils.button import Button, ButtonState
 from visualizer.colors import Color
-from game_manager import State
+from game_manager import State, GameManager
 
 
 class MainMenu(Screen):
 
-    def __init__(self, game_manager, surface):
+    def __init__(self, game_manager: GameManager,
+                 surface: pygame.surface.Surface) -> None:
         super().__init__(game_manager, surface)
 
         self.selected_index = 0
@@ -18,7 +19,7 @@ class MainMenu(Screen):
                         Button(0, 0, 200, 50, "Instructions"),
                         Button(0, 0, 200, 50, "Exit")]
 
-    def activate_selected(self):
+    def activate_selected(self) -> None:
         if self.selected_index == 0:
             self.game_manager.reset()
             self.game_manager.loading_reason = "start"
@@ -34,7 +35,7 @@ class MainMenu(Screen):
             pygame.quit()
             sys.exit(0)
 
-    def handle_events(self, event):
+    def handle_events(self, event: pygame.event.Event) -> None:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_DOWN:
@@ -58,7 +59,7 @@ class MainMenu(Screen):
             for button in self.buttons:
                 button.handle_event(event)
 
-    def draw(self):
+    def draw(self) -> None:
         self.screen.fill(Color.BG.rgb())
 
         cx = self.screen.get_width() // 2

@@ -38,7 +38,13 @@ restart:
 	when the game is launched"
 
 debug: install
-	$(PY) -m pdb src $(ARGS)
+	$(PY) pdb pac-man.py $(ARGS)
+
+packaging: install
+	.venv/bin/pip install pyinstaller
+	.venv/bin/python -m PyInstaller --onefile --add-data "assets:assets" --add-data "resources:resources" --paths src pac-man.py
+	cp config.json dist/config.json
+	chmod +x ./dist/pac-man
 
 lint: install
 	$(PY) -m flake8 src --exclude .venv
@@ -52,6 +58,7 @@ clean:
 	@rm -rf $(VENV)
 	@rm -rf .mypy_cache
 	@rm -rf dist
+	@rm -rf build
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 
 re: clean run

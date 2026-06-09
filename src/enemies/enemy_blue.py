@@ -1,6 +1,7 @@
 import random
-
 from enemies.enemy_base import Enemy
+from player.player import Player
+from maze.maze import Maze
 
 
 class EnemyBlue(Enemy):
@@ -8,7 +9,7 @@ class EnemyBlue(Enemy):
     Blue ghost with semi-random movement behavior.
     """
 
-    def choose_direction(self, player, maze) -> None:
+    def choose_direction(self, player: Player, maze: Maze) -> None:
         """
         Select a movement direction using a mixed strategy.
 

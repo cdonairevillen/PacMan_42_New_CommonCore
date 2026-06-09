@@ -1,3 +1,4 @@
+from __future__ import annotations
 import pygame
 from .screen import Screen, ScrollState
 from .utils.button import Button
@@ -6,8 +7,10 @@ from game_manager import State
 
 
 class Victory(Screen):
+    from game_manager import GameManager
 
-    def __init__(self, game_manager, surface) -> None:
+    def __init__(self, game_manager: GameManager,
+                 surface: pygame.surface.Surface) -> None:
         super().__init__(game_manager, surface)
 
         self.player_name = ""
