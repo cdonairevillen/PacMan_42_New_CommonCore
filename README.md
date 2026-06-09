@@ -273,3 +273,7 @@ Development was divided into several milestones:
 Full project management documentation — including Gantt, decision log, risk analysis, team organization, blocking points, and acceptance test plan — is available in:
 
 [project_management/PROJECT_MANAGEMENT.md](project_management/PROJECT_MANAGEMENT.md)
+
+#  itch.io link
+
+[https://cdonairevillen.itch.io/pac-man](Game_download Link) 
