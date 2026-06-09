@@ -131,8 +131,6 @@ class HUD:
         if gm.cheat_mode.enabled:
             cheat_surf = self.font_score.render("C", True,
                                                 Color.PLAYER_SPAWN.rgb())
-            
             cheat_rect = cheat_surf.get_rect(midright=(sw - 16 - 90,
                                                        cy + 10))
-            
             self.surface.blit(cheat_surf, cheat_rect)

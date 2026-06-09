@@ -3,6 +3,7 @@ import pygame
 from game_manager import GameManager, State
 from .screen import Screen
 from .utils.floating_text import FloatingText
+from visualizer.visualizer import MazeVisualizer
 
 
 class GameScreen(Screen):
@@ -33,7 +34,7 @@ class GameScreen(Screen):
         """
         super().__init__(game_manager, surface)
 
-        self.visualizer = visualizer
+        self.visualizer: MazeVisualizer = visualizer
         self.floating_texts: list[FloatingText] = []
         self.font_float: pygame.font.Font = pygame.font.SysFont(
             "monospace", 20, bold=True
@@ -131,6 +132,7 @@ class GameScreen(Screen):
         viz.draw_maze()
         viz.draw_entities()
 
+        assert self.game_manager.current_maze is not None
         maze = self.game_manager.current_maze
         y_base = (40 + maze.height * viz.cell_size)
         self.hud.draw(y_base)

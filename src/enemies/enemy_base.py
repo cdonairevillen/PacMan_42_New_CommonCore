@@ -1,5 +1,4 @@
 from __future__ import annotations
-from collections import deque
 from enum import Enum
 
 
@@ -25,7 +24,7 @@ class Enemy:
         self,
         x: int,
         y: int,
-        speed: int,
+        speed: float,
         cell_size: int = 28,
     ) -> None:
         """
@@ -56,7 +55,11 @@ class Enemy:
         self.direction_y = 0
         self.move_timer: float = 0.0
         self.state = EnemyState.NORMAL
-        self.respawn_timer = 0
+        self.respawn_timer = 0.0
+
+        self.eat_cooldown = 0.0
+        # self.return_path = []
+        self.blink_timer = 0.0
 
     def update_visual(self, dt: float) -> None:
         """
@@ -138,7 +141,7 @@ class Enemy:
         Return all valid movement directions from the current cell.
         """
 
-        possible_directions = []
+        possible_directions: list[tuple[int, int]] = []
 
         cell = maze.get_cell(self.x, self.y)
 

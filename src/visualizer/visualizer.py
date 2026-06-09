@@ -10,7 +10,7 @@ from ui_manager import UIManager
 class MazeVisualizer:
 
     def __init__(self, game_manager: GameManager,
-                 cfg: VisualConfig = None,
+                 cfg: VisualConfig | None = None,
                  title: str = "Pac-Man") -> None:
         self.game_manager: GameManager = game_manager
         self.cfg: VisualConfig = cfg if cfg is not None else VisualConfig()
@@ -39,6 +39,7 @@ class MazeVisualizer:
         return self.cfg.cell_size
 
     def base_size(self) -> tuple[int, int]:
+        assert self.game_manager.current_maze is not None
         if self.game_manager.state in (State.PLAYING, State.LOADING):
             maze = self.game_manager.current_maze
             w = maze.width * self.cfg.cell_size + self.cfg.margin * 2

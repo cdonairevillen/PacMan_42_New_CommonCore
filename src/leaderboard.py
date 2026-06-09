@@ -16,7 +16,7 @@ class Leaderboard():
 
         if not os.path.exists(self.path):
 
-            struct = {"scores": []}
+            struct: dict = {"scores": []}
 
             with open(self.path, "w", encoding="utf-8") as f:
                 json.dump(struct, f, ensure_ascii=False, indent=4)

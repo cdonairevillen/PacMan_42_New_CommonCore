@@ -47,7 +47,7 @@ class Player:
         self.direction_y = 0
 
         self.state = PlayerState.NORMAL
-        self.power_timer = 0
+        self.power_timer = 0.0
 
         self.last_direction = "right"
 

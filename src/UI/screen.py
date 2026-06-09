@@ -16,6 +16,8 @@ class Screen(ABC):
     def __init__(self, game_manager: GameManager, surface):
         self.game_manager: GameManager = game_manager
         self.screen = surface
+        self.player_name = ""
+        self.player_timer = 0.0
 
     @abstractmethod
     def draw(self):

@@ -1,7 +1,6 @@
 from enum import Enum
 from maze.maze import Maze
 from player.player import Player, PlayerState
-from typing import Optional
 from consumibles.pac_gum import Pacgum, SuperPacgum
 from enemies.enemy_base import Enemy, EnemyState
 from enemies.enemy_red import EnemyRed
@@ -45,7 +44,6 @@ class GameManager():
         self.current_level: int = 0
         self.current_pacgums: list[Pacgum] = []
         self.enemies: list[Enemy] = []
-        self.current_maze: Optional[Maze] = None
         self.large_map_warning_shown = False
         self.build_level(seed=config["seed"])
 
@@ -128,12 +126,11 @@ class GameManager():
                 height=self.config["levels"][self.current_level]["height"],
                 seed=self.config["seed"])
 
-        corners = set(self.current_maze.get_corner_cells())
         center = self.current_maze.center
         self.current_pacgums = []
         self.enemies = []
 
-        corners = list(self.current_maze.get_corner_cells())
+        corners = self.current_maze.get_corner_cells()
 
         self.enemies = [
             EnemyRed(corners[0][0], corners[0][1], speed=3.8,
@@ -279,7 +276,8 @@ class GameManager():
             if enemy.move_timer >= 1.0 / enemy.speed:
                 if isinstance(enemy, EnemyOrange):
                     enemy.choose_direction(self.current_maze)
-                else:
+                elif isinstance(enemy, EnemyBlue) or isinstance(
+                        enemy, EnemyPink) or isinstance(enemy, EnemyRed):
                     enemy.choose_direction(self.player, self.current_maze)
                 enemy.move(self.current_maze)
                 enemy.move_timer -= 1.0 / enemy.speed
@@ -315,6 +313,7 @@ class GameManager():
         Restores enemy coordinates, movement direction, visual position,
         and state for the beginning of a level or respawn sequence.
         """
+        assert self.current_maze is not None
         corners = self.current_maze.get_corner_cells()
 
         if len(corners) < 4:
@@ -330,7 +329,7 @@ class GameManager():
             enemy.direction_x = 0
             enemy.direction_y = 0
             enemy.state = EnemyState.NORMAL
-            enemy.return_path = []
+            # enemy.return_path = []
             enemy.blink_timer = 0.0
             enemy.pixels_per_second = (
                 enemy.speed * enemy.cell_size
