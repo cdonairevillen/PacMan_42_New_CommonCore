@@ -270,8 +270,6 @@ Development was divided into several milestones:
 7. Cheat mode.
 8. Final testing and polishing.
 
-Project management resources can be found in:
+Full project management documentation — including Gantt, decision log, risk analysis, team organization, blocking points, and acceptance test plan — is available in:
 
-- Information on how each enemy works: https://pacman.fandom.com/es/wiki/Pac-Man
-- Play the game to analyze it: https://pacmangratis.net/
-- Background music: https://pixabay.com/es/sound-effects/search/pacman/
+[project_management/PROJECT_MANAGEMENT.md](project_management/PROJECT_MANAGEMENT.md)

@@ -1,12 +1,28 @@
 {
     "scores": [
         {
+            "name": "Pepe",
+            "score": 7680
+        },
+        {
             "name": "Chrystian2",
             "score": 5520
         },
         {
             "name": "Chrystian",
             "score": 3920
+        },
+        {
+            "name": "juan",
+            "score": 3550
+        },
+        {
+            "name": "Jesus",
+            "score": 3290
+        },
+        {
+            "name": "Trucazo",
+            "score": 170
         }
     ]
 }

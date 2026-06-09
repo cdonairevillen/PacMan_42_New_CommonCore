@@ -21,7 +21,8 @@ class MainMenu(Screen):
     def activate_selected(self):
         if self.selected_index == 0:
             self.game_manager.reset()
-            self.game_manager.state = State.PLAYING
+            self.game_manager.loading_reason = "start"
+            self.game_manager.state = State.LOADING
 
         elif self.selected_index == 1:
             self.game_manager.state = State.LEADERBOARD

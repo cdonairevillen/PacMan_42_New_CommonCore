@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 from collections import deque
 from enum import Enum
 
@@ -19,6 +18,8 @@ class Enemy:
     information, speed, and state. Specific enemy behaviors are
     implemented by subclasses.
     """
+
+    RETURN_SPEED_MULTIPLIER: float = 3.0
 
     def __init__(
         self,
@@ -43,7 +44,6 @@ class Enemy:
         self.spawn_y = y
 
         self.speed = speed
-        self.normal_speed: float = float(speed)
         self.cell_size = cell_size
         self.pixels_per_second: float = float(speed * cell_size)
 
@@ -57,55 +57,6 @@ class Enemy:
         self.move_timer: float = 0.0
         self.state = EnemyState.NORMAL
         self.respawn_timer = 0
-
-        self.return_path: list[tuple[int, int]] = []
-        self.blink_timer: float = 0.0
-
-    def find_path_to(self, tx: int, ty: int, maze) -> list[tuple[int, int]]:
-        """
-        Find shortest path to target using BFS.
-
-        Args:
-            tx: Target column index.
-            ty: Target row index.
-            maze: Current maze instance.
-
-        Returns:
-            List of (x, y) cells from next step to target,
-            or empty list if no path exists.
-        """
-        start = (self.x, self.y)
-        goal = (tx, ty)
-
-        if start == goal:
-            return []
-
-        queue: deque[list[tuple[int, int]]] = deque([[start]])
-        visited: set[tuple[int, int]] = {start}
-
-        while queue:
-            path = queue.popleft()
-            cx, cy = path[-1]
-
-            if (cx, cy) == goal:
-                return path[1:]
-
-            cell = maze.get_cell(cx, cy)
-            if cell is None:
-                continue
-
-            for dx, dy, direction in [
-                (1, 0, "E"),
-                (-1, 0, "W"),
-                (0, -1, "N"),
-                (0, 1, "S"),
-            ]:
-                nx, ny = cx + dx, cy + dy
-                if (nx, ny) not in visited and cell.can_move(direction):
-                    visited.add((nx, ny))
-                    queue.append(path + [(nx, ny)])
-
-        return []
 
     def update_visual(self, dt: float) -> None:
         """
