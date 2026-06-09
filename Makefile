@@ -66,6 +66,8 @@ re: clean run
 
 help:
 	@echo "make run                     -> Run project (default: config.json)"
+	@echo "make packaging               -> Create a pac-man binary"
+	@echo "make restart                 -> Delete the leaderboard"
 	@echo "make run ARGS=mi_config.json -> Run with custom config"
 	@echo "make install                 -> Install dependencies"
 	@echo "make lint                    -> Run linters"
