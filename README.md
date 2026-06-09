@@ -272,6 +272,6 @@ Development was divided into several milestones:
 
 Project management resources can be found in:
 
-```text
-<project_management_directory>
-```
+- Information on how each enemy works: https://pacman.fandom.com/es/wiki/Pac-Man
+- Play the game to analyze it: https://pacmangratis.net/
+- Background music: https://pixabay.com/es/sound-effects/search/pacman/
